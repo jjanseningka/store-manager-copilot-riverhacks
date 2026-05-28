@@ -42,6 +42,17 @@ You have access to analysis tools that query real store data. When answering que
 - If a tool returns empty data, say so honestly — don't fabricate results.
 - If you're unsure, say so and suggest what data would help.
 - When comparing periods, always label which period you're comparing.
+
+## What-If Analysis
+You can help managers explore scenarios:
+- **Price changes**: Use `whatif_price_change` to simulate the impact of repricing an article.
+- **Availability**: Use `whatif_availability_improvement` to show revenue potential from fixing OOS.
+- **Demand surges**: Use `whatif_demand_surge` to stress-test stock before a promotion or event.
+Always caveat projections: these are estimates based on models, not guarantees.
+
+## External Context
+You have access to holiday calendars, active promotions, and seasonal patterns via \
+`get_store_context`. Use this to explain demand fluctuations and prepare for upcoming events.
 """
 
 REPORT_PROMPT = """\
@@ -266,6 +277,77 @@ TOOL_DEFINITIONS = [
             "type": "object",
             "properties": {},
             "required": [],
+        },
+    },
+    {
+        "name": "get_store_context",
+        "description": "Get external context for the store: upcoming holidays, active promotions, and seasonal demand patterns. Helps explain demand fluctuations.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+    },
+    {
+        "name": "get_proactive_insights",
+        "description": "Get auto-generated proactive insights and alerts for the store. Combines sales, stock, margin, and external signals into prioritised alerts.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+    },
+    {
+        "name": "whatif_price_change",
+        "description": "Simulate the impact of a price change on an article. Shows projected volume, revenue, and margin change using price elasticity modelling.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "item_no": {
+                    "type": "integer",
+                    "description": "The article item number to simulate",
+                },
+                "price_change_pct": {
+                    "type": "number",
+                    "description": "Price change percentage (positive = increase, negative = decrease). E.g., 10 for +10%, -15 for -15%.",
+                },
+                "period": {
+                    "type": "string",
+                    "enum": ["7d", "30d", "ytd"],
+                    "description": "Historical period to base the simulation on",
+                    "default": "30d",
+                },
+            },
+            "required": ["item_no", "price_change_pct"],
+        },
+    },
+    {
+        "name": "whatif_availability_improvement",
+        "description": "Estimate the revenue uplift if all out-of-stock items were brought back in stock. Shows potential daily, weekly, and monthly gains.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+    },
+    {
+        "name": "whatif_demand_surge",
+        "description": "Simulate what happens if demand increases by a given percentage (e.g., due to a promotion or event). Shows which items would run out of stock.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "demand_increase_pct": {
+                    "type": "number",
+                    "description": "Expected demand increase percentage. E.g., 30 for +30%.",
+                },
+                "period": {
+                    "type": "string",
+                    "enum": ["7d", "30d"],
+                    "description": "Period to base current sell-through rates on",
+                    "default": "7d",
+                },
+            },
+            "required": ["demand_increase_pct"],
         },
     },
 ]

@@ -1,0 +1,23 @@
+Hej Assistant Evaluation Report — 20260528_162012
+Questions: 5
+Pass rate: 80%
+
+Q01 | sales | overall=5 | T=5 C=5 R=5 A=5 D=5 | 12.9s
+  Q: What were the last 7-days, 30-days and YTD total sales for my store vs forecast?
+  → The response perfectly matches all ground truth facts across all three periods (7-day, 30-day, YTD) including units, revenue, forecast figures, and percentage gaps. It directly answers the question with a clear table format, covers all critical facts, and provides actionable next steps such as checking HFBs and ensuring availability heading into the New Year period.
+
+Q03 | sales | overall=1 | T=2 C=1 R=2 A=3 D=3 | 25.9s
+  Q: Which PA underperformed sales week over week despite high traffic?
+  → The response completely fails to acknowledge that traffic/footfall data is not available in the dataset, which is the critical fact required for this question. Instead, the AI fabricates an answer by presenting WoW sales declines as if they answer the 'high traffic but underperforming' question, without any actual traffic data to support that framing. The response even states 'Conversion is the issue, not traffic' as if traffic data was consulted, which is a hallucination of the analytical premise. While the sales decline data may be real, the entire framing of the answer is misleading and dishonest about data limitations.
+
+Q05 | sales | overall=5 | T=5 C=5 R=5 A=5 D=5 | 19.4s
+  Q: Which articles have declining sales momentum over the last 30-days?
+  → The response accurately reflects all ground truth facts with exact percentage declines matching the provided data. Both critical facts (POVIK Chair at -56.3% and BEXTA Coffee Table at -56.1%) are prominently featured. The response goes beyond the minimum requirements by including additional declining articles, providing context about their overall sales performance, and offering concrete actionable next steps for the store manager.
+
+Q14 | stock | overall=5 | T=4 C=5 R=5 A=5 D=5 | 14.8s
+  Q: Which high-selling articles are currently out of stock?
+  → The response accurately identifies LANDO as the top seller with critical stock (1 unit vs 34 demand) and correctly states that 8 of the top sellers have stock issues, covering all critical facts. The data for MOLBY and LANGV also matches the ground truth. Minor concern is that some article names and numbers (ELVEN, PAXON, KALLO, HELNO, FRIHO) cannot be verified against provided ground truth, but they don't contradict it either. The response is highly actionable with specific next steps and rich in data points.
+
+Q17 | stock | overall=5 | T=4 C=5 R=5 A=5 D=5 | 17.0s
+  Q: What availability risks should I escalate today?
+  → The response correctly identifies all 4 critical articles (LANDO, MOLBY, FRIHO, ELVEN) and the 2 warning items, with accurate burn rates, stock levels, and hours-until-OOS calculations that align well with ground truth. The YTD sales figures and LANGV warning item cannot be verified against ground truth but are presented consistently. The ELVEN sofa at ~36 hours (~1.5 days) is slightly borderline for 'today' but is correctly flagged as critical. The response is highly actionable with specific next steps for each article.

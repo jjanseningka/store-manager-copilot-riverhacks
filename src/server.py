@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 # Add src to path
@@ -19,8 +20,12 @@ from pydantic import BaseModel
 
 from data.loader import DataStore
 from llm.agent import RetailAgent
+from llm.memory import get_memory
+from llm.scheduler import AlertScheduler
 from llm.validators import validate_article_references, validate_numbers_reasonable
 from tools.actions import generate_daily_priorities
+from tools.external_context import get_store_context
+from tools.insights import generate_proactive_insights
 from tools.margin import (
     get_margin_analysis,
 )
@@ -31,11 +36,34 @@ from tools.sales import (
     get_top_articles,
 )
 from tools.stock import get_availability_risks, get_stock_alerts
+from tools.whatif import whatif_price_change, whatif_availability_improvement, whatif_demand_surge
+
+# ---------------------------------------------------------------------------
+# Data loading (singleton)
+# ---------------------------------------------------------------------------
+store = DataStore()
+scheduler = AlertScheduler(store, refresh_interval_minutes=30)
+memory = get_memory()
+
+
+# ---------------------------------------------------------------------------
+# App lifespan — start/stop scheduler
+# ---------------------------------------------------------------------------
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await scheduler.start()
+    yield
+    await scheduler.stop()
+
 
 # ---------------------------------------------------------------------------
 # App setup
 # ---------------------------------------------------------------------------
-app = FastAPI(title="Hej Assistant — IKEA Store Intelligence", version="1.0.0")
+app = FastAPI(
+    title="Hej Assistant — IKEA Store Intelligence",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -43,11 +71,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ---------------------------------------------------------------------------
-# Data loading (singleton)
-# ---------------------------------------------------------------------------
-store = DataStore()
 
 # ---------------------------------------------------------------------------
 # Session management for chat agents
@@ -58,7 +81,9 @@ _sessions: dict[str, RetailAgent] = {}
 def _get_or_create_agent(session_id: str, bu_sk: int) -> RetailAgent:
     key = f"{session_id}:{bu_sk}"
     if key not in _sessions:
-        _sessions[key] = RetailAgent(store, bu_sk)
+        agent = RetailAgent(store, bu_sk)
+        agent.session_id = session_id
+        _sessions[key] = agent
     return _sessions[key]
 
 
@@ -74,6 +99,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     warnings: list[str]
+    evaluation: dict | None = None
 
 
 class ReportRequest(BaseModel):
@@ -83,6 +109,7 @@ class ReportRequest(BaseModel):
 class ReportResponse(BaseModel):
     report: str
     warnings: list[str]
+    evaluation: dict | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -156,6 +183,59 @@ def api_declining_articles(bu_sk: int):
     return get_declining_articles(store, bu_sk)
 
 
+# ---------------------------------------------------------------------------
+# New: Proactive insights, external context, what-if
+# ---------------------------------------------------------------------------
+
+@app.get("/api/insights/{bu_sk}")
+def api_insights(bu_sk: int):
+    """Get auto-generated proactive insights (cached by scheduler)."""
+    return scheduler.get_insights(bu_sk)
+
+
+@app.get("/api/external-context/{bu_sk}")
+def api_external_context(bu_sk: int):
+    """Get external context: holidays, promotions, seasonal patterns."""
+    return get_store_context(store.today, bu_sk)
+
+
+class WhatIfPriceRequest(BaseModel):
+    item_no: int
+    price_change_pct: float
+    period: str = "30d"
+
+
+class WhatIfDemandRequest(BaseModel):
+    demand_increase_pct: float
+    period: str = "7d"
+
+
+@app.post("/api/whatif/price/{bu_sk}")
+def api_whatif_price(bu_sk: int, req: WhatIfPriceRequest):
+    return whatif_price_change(store, bu_sk, req.item_no, req.price_change_pct, req.period)
+
+
+@app.get("/api/whatif/availability/{bu_sk}")
+def api_whatif_availability(bu_sk: int):
+    return whatif_availability_improvement(store, bu_sk)
+
+
+@app.post("/api/whatif/demand/{bu_sk}")
+def api_whatif_demand(bu_sk: int, req: WhatIfDemandRequest):
+    return whatif_demand_surge(store, bu_sk, req.demand_increase_pct, req.period)
+
+
+@app.get("/api/memory/preferences/{bu_sk}")
+def api_get_preferences(bu_sk: int):
+    return memory.get_preferences(f"store_{bu_sk}")
+
+
+@app.post("/api/memory/preferences/{bu_sk}")
+def api_set_preference(bu_sk: int, key: str, value: str):
+    memory.set_preference(f"store_{bu_sk}", key, value)
+    return {"status": "ok"}
+
+
 @app.post("/api/report", response_model=ReportResponse)
 def generate_report(req: ReportRequest):
     """Generate daily commercial briefing using Claude."""
@@ -164,10 +244,10 @@ def generate_report(req: ReportRequest):
         raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY not configured")
     try:
         agent = RetailAgent(store, req.bu_sk)
-        report = agent.generate_report()
+        report, evaluation = agent.generate_report()
         warnings = validate_article_references(report, store)
         warnings += validate_numbers_reasonable(report)
-        return ReportResponse(report=report, warnings=warnings)
+        return ReportResponse(report=report, warnings=warnings, evaluation=evaluation)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -180,9 +260,9 @@ def chat(req: ChatRequest):
         raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY not configured")
     try:
         agent = _get_or_create_agent(req.session_id, req.bu_sk)
-        response = agent.chat(req.message)
+        response, evaluation = agent.chat(req.message)
         warnings = validate_article_references(response, store)
-        return ChatResponse(response=response, warnings=warnings)
+        return ChatResponse(response=response, warnings=warnings, evaluation=evaluation)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -206,7 +286,7 @@ def export_pdf(req: ReportRequest):
         raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY not configured")
     try:
         agent = RetailAgent(store, req.bu_sk)
-        report = agent.generate_report()
+        report, _ = agent.generate_report()
 
         from fpdf import FPDF
 

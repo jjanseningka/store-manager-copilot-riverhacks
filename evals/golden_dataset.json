@@ -1,0 +1,352 @@
+[
+  {
+    "id": "Q01",
+    "question": "What were the last 7-days, 30-days and YTD total sales for my store vs forecast?",
+    "category": "sales",
+    "answerable": true,
+    "expected_tools": ["get_sales_summary"],
+    "ground_truth_facts": [
+      "7-day actual sales: 1,180 units",
+      "7-day revenue: €245,677",
+      "7-day forecast: 1,137 units",
+      "7-day gap: +3.8% above forecast",
+      "30-day actual sales: 5,147 units",
+      "30-day revenue: €1,067,000",
+      "30-day forecast: 4,981 units",
+      "30-day gap: +3.3% above forecast",
+      "YTD actual sales: 44,204 units",
+      "YTD revenue: €9,171,585",
+      "YTD forecast: 41,237 units",
+      "YTD gap: +7.2% above forecast"
+    ],
+    "critical_facts": ["7-day: 1,180 units, +3.8%", "30-day: 5,147 units, +3.3%", "YTD: 44,204 units, +7.2%"]
+  },
+  {
+    "id": "Q02",
+    "question": "Which HFB is currently driving the highest sales growth week over week?",
+    "category": "sales",
+    "answerable": true,
+    "expected_tools": ["get_hfb_performance"],
+    "ground_truth_facts": [
+      "Living Room Storage (HFB 1) has highest growth at +60.0% week over week",
+      "Living Room Storage 7d net: €51,872",
+      "Sofas & Armchairs declined -8.0%",
+      "Chairs declined -27.6%",
+      "Tables & Desks declined -30.0%"
+    ],
+    "critical_facts": ["Living Room Storage is the highest growth HFB at +60%"]
+  },
+  {
+    "id": "Q03",
+    "question": "Which PA underperformed sales week over week despite high traffic?",
+    "category": "sales",
+    "answerable": false,
+    "expected_tools": [],
+    "ground_truth_facts": [
+      "Traffic data is not available in the dataset",
+      "Agent should acknowledge this limitation"
+    ],
+    "critical_facts": ["Should acknowledge traffic/footfall data is not available"]
+  },
+  {
+    "id": "Q04",
+    "question": "What are my top 10 selling articles and how do they compare to last 7-days, 30-days and YTD?",
+    "category": "sales",
+    "answerable": true,
+    "expected_tools": ["get_top_articles"],
+    "ground_truth_facts": [
+      "Top article (30d): LANDO Storage bench - 278 units, €54,874",
+      "2nd: BEXTA Coffee table - 234 units, €49,056",
+      "3rd: MOLBY Bed frame - 186 units, €44,285",
+      "4th: FINVO Wall shelf - 222 units, €43,970",
+      "5th: UPPVO Bar stool - 218 units, €43,138"
+    ],
+    "critical_facts": ["LANDO Storage bench is the top seller by revenue (30d)", "Should show data for all 3 periods"]
+  },
+  {
+    "id": "Q05",
+    "question": "Which articles have declining sales momentum over the last 30-days?",
+    "category": "sales",
+    "answerable": true,
+    "expected_tools": ["get_declining_articles"],
+    "ground_truth_facts": [
+      "POVIK Chair: -56.3% decline",
+      "BEXTA Coffee table: -56.1% decline",
+      "LACKO Dining table: -51.6% decline",
+      "MAROV Bed base: -49.7% decline",
+      "KOVARP Mirror: -42.1% decline"
+    ],
+    "critical_facts": ["POVIK Chair has the steepest decline at -56.3%", "BEXTA Coffee table -56.1%"]
+  },
+  {
+    "id": "Q06",
+    "question": "What time of day are we converting best for sales?",
+    "category": "sales",
+    "answerable": false,
+    "expected_tools": [],
+    "ground_truth_facts": [
+      "Time-of-day sales data is not available",
+      "Agent should acknowledge this limitation"
+    ],
+    "critical_facts": ["Should acknowledge time-of-day data is not available"]
+  },
+  {
+    "id": "Q07",
+    "question": "Which new articles launched this month are beating sales expectations?",
+    "category": "sales",
+    "answerable": false,
+    "expected_tools": [],
+    "ground_truth_facts": [
+      "New article launch data is not available",
+      "Agent should acknowledge this limitation"
+    ],
+    "critical_facts": ["Should acknowledge new article launch data is not available"]
+  },
+  {
+    "id": "Q08",
+    "question": "Which single article contributed the most to total sales last 7-days?",
+    "category": "sales",
+    "answerable": true,
+    "expected_tools": ["get_top_articles"],
+    "ground_truth_facts": [
+      "Agent should call get_top_articles with period=7d and n=1 or n=10",
+      "Should identify the single top-selling article by net sales"
+    ],
+    "critical_facts": ["Should identify one specific article as the top contributor"]
+  },
+  {
+    "id": "Q09",
+    "question": "Are there sales gaps versus forecast that are directly tied to availability?",
+    "category": "sales_stock",
+    "answerable": true,
+    "expected_tools": ["get_sales_vs_forecast", "get_oos_top_sellers", "get_availability_risks"],
+    "ground_truth_facts": [
+      "Overall store is above forecast (+3.8% 7d)",
+      "But LANDO Storage bench (top seller) has only 1 unit stock vs 34 demand",
+      "MOLBY Bed frame has 12 stock vs 33 demand",
+      "4 articles at critical risk of running out within 2 days"
+    ],
+    "critical_facts": ["Should connect top seller availability risks to potential sales impact"]
+  },
+  {
+    "id": "Q10",
+    "question": "What is my store's gross margin today vs target?",
+    "category": "margin",
+    "answerable": true,
+    "expected_tools": ["get_margin_analysis"],
+    "ground_truth_facts": [
+      "7-day margin: 17.5%",
+      "Total margin: €52,001",
+      "Total net: €245,677",
+      "No explicit target in data"
+    ],
+    "critical_facts": ["Margin is 17.5%", "Should note no explicit target in data"]
+  },
+  {
+    "id": "Q11",
+    "question": "Which HFBs have strong sales but low gross margin?",
+    "category": "margin",
+    "answerable": true,
+    "expected_tools": ["get_hfb_margin_analysis", "get_hfb_performance"],
+    "ground_truth_facts": [
+      "All HFBs are in 17.1-17.8% margin range, very uniform",
+      "Hallway (HFB 10) has lowest margin at 17.1% with €37,445 sales",
+      "Living Room Storage (HFB 1) has 17.6% margin with highest sales €51,872"
+    ],
+    "critical_facts": ["Should identify HFBs with relatively lower margins despite strong sales"]
+  },
+  {
+    "id": "Q12",
+    "question": "What are my top 10 most profitable articles the last 30 days?",
+    "category": "margin",
+    "answerable": true,
+    "expected_tools": ["get_top_profitable_articles"],
+    "ground_truth_facts": [
+      "1. LANDO Storage bench - €11,194 margin (16.9%)",
+      "2. BEXTA Coffee table - €10,283 margin (17.3%)",
+      "3. MOLBY Bed frame - €9,602 margin (17.8%)",
+      "4. FINVO Wall shelf - €9,373 margin (17.6%)",
+      "5. UPPVO Bar stool - €9,171 margin (17.5%)"
+    ],
+    "critical_facts": ["LANDO is most profitable at €11,194 margin", "Should list 10 articles"]
+  },
+  {
+    "id": "Q13",
+    "question": "Which articles have negative or critically low margin?",
+    "category": "margin",
+    "answerable": true,
+    "expected_tools": ["get_low_margin_alerts"],
+    "ground_truth_facts": [
+      "No articles with low margin alerts in the 30d period",
+      "All margins are in the 16-18% range"
+    ],
+    "critical_facts": ["No low margin alerts found - all articles have healthy margins"]
+  },
+  {
+    "id": "Q14",
+    "question": "Which high-selling articles are currently out of stock?",
+    "category": "stock",
+    "answerable": true,
+    "expected_tools": ["get_oos_top_sellers"],
+    "ground_truth_facts": [
+      "LANDO Storage bench: top seller, only 1 unit left vs 34 demand",
+      "MOLBY Bed frame: 12 units vs 33 demand",
+      "LANGV Storage box: 19 units vs 33 demand",
+      "8 of top 30 sellers have stock issues"
+    ],
+    "critical_facts": ["LANDO is the top seller with critical stock (1 unit)", "8 of top 30 sellers have stock issues"]
+  },
+  {
+    "id": "Q15",
+    "question": "Which articles are below safety stock right now?",
+    "category": "stock",
+    "answerable": true,
+    "expected_tools": ["get_stock_alerts"],
+    "ground_truth_facts": [
+      "0 articles out of stock",
+      "8 articles in low stock",
+      "22 articles healthy"
+    ],
+    "critical_facts": ["8 articles are low stock", "0 completely out of stock", "22 healthy"]
+  },
+  {
+    "id": "Q16",
+    "question": "Are any articles overstocked relative to forecast?",
+    "category": "stock",
+    "answerable": true,
+    "expected_tools": ["get_overstock_articles"],
+    "ground_truth_facts": [
+      "No overstocked articles found",
+      "Count: 0"
+    ],
+    "critical_facts": ["No overstocked articles"]
+  },
+  {
+    "id": "Q17",
+    "question": "What availability risks should I escalate today?",
+    "category": "stock",
+    "answerable": true,
+    "expected_tools": ["get_availability_risks"],
+    "ground_truth_facts": [
+      "LANDO Storage bench: 0.1 days until OOS (critical)",
+      "MOLBY Bed frame: 0.6 days until OOS (critical)",
+      "FRIHO Chest of drawers: 0.7 days until OOS (critical)",
+      "ELVEN Sofa: 1.5 days until OOS (critical)",
+      "KALLO Shelf unit: 4.4 days until OOS (warning)"
+    ],
+    "critical_facts": ["4 articles critical (< 2 days)", "LANDO, MOLBY, FRIHO need immediate escalation"]
+  },
+  {
+    "id": "Q18",
+    "question": "Which top sellers are at risk of going out of stock this week?",
+    "category": "stock",
+    "answerable": true,
+    "expected_tools": ["get_availability_risks", "get_oos_top_sellers"],
+    "ground_truth_facts": [
+      "LANDO Storage bench: top seller, 0.1 days until OOS",
+      "MOLBY Bed frame: top seller, 0.6 days until OOS",
+      "FRIHO Chest of drawers: 0.7 days until OOS",
+      "ELVEN Sofa: 1.5 days until OOS"
+    ],
+    "critical_facts": ["LANDO and MOLBY are both top sellers at critical stock risk"]
+  },
+  {
+    "id": "Q19",
+    "question": "What are the top 5 actions I should take today to protect sales?",
+    "category": "actions",
+    "answerable": true,
+    "expected_tools": ["generate_daily_priorities"],
+    "ground_truth_facts": [
+      "1. Critical availability: 4 articles running out within 2 days (LANDO, MOLBY, FRIHO)",
+      "2. High: 8 articles below safety stock",
+      "3. High: 8 of top 30 sellers have stock issues",
+      "4. Medium: Declining momentum on POVIK, BEXTA, LACKO",
+      "5. Medium: Coaching - focus on alternatives for low-stock top sellers"
+    ],
+    "critical_facts": ["Urgent replenishment for LANDO, MOLBY, FRIHO", "5 prioritized actions"]
+  },
+  {
+    "id": "Q20",
+    "question": "What should I brief my team on in today's huddle?",
+    "category": "actions",
+    "answerable": true,
+    "expected_tools": ["generate_daily_priorities", "get_sales_summary", "get_stock_alerts"],
+    "ground_truth_facts": [
+      "Sales are above forecast (+3.8% 7d)",
+      "4 critical stock items need attention",
+      "8 low stock items",
+      "Declining articles: POVIK, BEXTA, LACKO",
+      "Margin healthy at 17.5%"
+    ],
+    "critical_facts": ["Should combine sales performance, stock risks, and actionable priorities"]
+  },
+  {
+    "id": "Q21",
+    "question": "What are the 3 key messages for my commercial huddle?",
+    "category": "actions",
+    "answerable": true,
+    "expected_tools": ["generate_daily_priorities", "get_sales_summary"],
+    "ground_truth_facts": [
+      "Should synthesize 3 clear messages",
+      "Cover sales performance, stock risks, and action items"
+    ],
+    "critical_facts": ["Should provide exactly 3 concise messages", "Cover sales, stock, and actions"]
+  },
+  {
+    "id": "Q22",
+    "question": "Are we driving profitable growth or just volume?",
+    "category": "margin",
+    "answerable": true,
+    "expected_tools": ["get_margin_analysis", "get_sales_summary"],
+    "ground_truth_facts": [
+      "Sales above forecast by 3.8% (7d), 3.3% (30d), 7.2% (YTD)",
+      "Margin at 17.5% - healthy and consistent",
+      "Growth is profitable, not just volume"
+    ],
+    "critical_facts": ["Growth is profitable - both sales and margin are healthy"]
+  },
+  {
+    "id": "Q23",
+    "question": "What are my top 10 selling articles last 30 days?",
+    "category": "sales",
+    "answerable": true,
+    "expected_tools": ["get_top_articles"],
+    "ground_truth_facts": [
+      "1. LANDO Storage bench - 278 units, €54,874",
+      "2. BEXTA Coffee table - 234 units, €49,056",
+      "3. MOLBY Bed frame - 186 units, €44,285",
+      "4. FINVO Wall shelf - 222 units, €43,970",
+      "5. UPPVO Bar stool - 218 units, €43,138"
+    ],
+    "critical_facts": ["LANDO is #1 by revenue at €54,874", "Should list 10 articles"]
+  },
+  {
+    "id": "Q24",
+    "question": "What are my top 10 profit articles last 30 days?",
+    "category": "margin",
+    "answerable": true,
+    "expected_tools": ["get_top_profitable_articles"],
+    "ground_truth_facts": [
+      "1. LANDO Storage bench - €11,194 margin",
+      "2. BEXTA Coffee table - €10,283 margin",
+      "3. MOLBY Bed frame - €9,602 margin",
+      "4. FINVO Wall shelf - €9,373 margin",
+      "5. UPPVO Bar stool - €9,171 margin"
+    ],
+    "critical_facts": ["LANDO is the most profitable at €11,194 margin"]
+  },
+  {
+    "id": "Q25",
+    "question": "Where am I most exposed on availability right now?",
+    "category": "stock",
+    "answerable": true,
+    "expected_tools": ["get_availability_risks", "get_stock_alerts"],
+    "ground_truth_facts": [
+      "LANDO Storage bench: <1 day until OOS, top seller",
+      "MOLBY Bed frame: <1 day, top seller",
+      "FRIHO Chest of drawers: <1 day",
+      "ELVEN Sofa: 1.5 days"
+    ],
+    "critical_facts": ["LANDO and MOLBY are biggest exposure - top sellers about to go OOS"]
+  }
+]

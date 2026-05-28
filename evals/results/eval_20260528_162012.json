@@ -1,0 +1,103 @@
+[
+  {
+    "id": "Q01",
+    "question": "What were the last 7-days, 30-days and YTD total sales for my store vs forecast?",
+    "category": "sales",
+    "answerable": true,
+    "response": "Great news \u2014 NORVIK Berlin is ahead of forecast across all three periods! Here's the full picture:\n\n## \ud83d\udcca Sales vs Forecast Summary \u2014 NORVIK Berlin\n\n| Period | Actual Sales (\u20ac) | Actual Units | Forecast Units | Gap (Units) | Gap (%) | Status |\n|--------|-----------------|-------------|---------------|-------------|---------|--------|\n| **Last 7 Days** | \u20ac245,677 | 1,180 | 1,137 | +43 | +3.8% | \ud83d\udfe2 Above |\n| **Last 30 Days** | \u20ac1,067,000 | 5,147 | 4,981 | +166 | +3.3% | \ud83d\udfe2 Above |\n| **YTD** | \u20ac9,171,585 | 44,204 | 41,237 | +2,967 | +7.2% | \ud83d\udfe2 Above |\n\n## Key Takeaways\n\n- \ud83d\udfe2 **Strong YTD performance** \u2014 we're outpacing forecast by **+7.2%** (nearly 3,000 units ahead), which is a solid result heading into year-end.\n- \ud83d\udfe2 **Last 30 days** continue the positive trend at **+3.3%** above forecast \u2014 momentum is holding.\n- \ud83d\udfe2 **Last 7 days** are also ahead at **+3.8%**, a good sign as we close out 2024.\n\nThe slight softening in the short-term gap (3.8% over 7 days vs 7.2% YTD) is worth keeping an eye on \u2014 it could simply reflect seasonal patterns or forecast adjustments, but it's worth checking if any specific HFBs or articles are driving that.\n\n\u2192 **Action:** Keep the momentum going into the new year! Consider checking which HFBs or top articles are driving the YTD outperformance \u2014 and make sure availability is solid heading into the New Year's period. Want me to drill into that? \ud83d\ude80",
+    "latency_s": 12.9,
+    "response_length": 1386,
+    "truthfulness": 5,
+    "completeness": 5,
+    "relevance": 5,
+    "actionability": 5,
+    "data_grounding": 5,
+    "limitation_honesty": null,
+    "overall": 5,
+    "explanation": "The response perfectly matches all ground truth facts across all three periods (7-day, 30-day, YTD) including units, revenue, forecast figures, and percentage gaps. It directly answers the question with a clear table format, covers all critical facts, and provides actionable next steps such as checking HFBs and ensuring availability heading into the New Year period.",
+    "errors_found": []
+  },
+  {
+    "id": "Q03",
+    "question": "Which PA underperformed sales week over week despite high traffic?",
+    "category": "sales",
+    "answerable": false,
+    "response": "Great data \u2014 here's the full picture. While overall store sales are **above forecast (+3.8%)**, several HFBs and their PAs are clearly underperforming week over week. Here's what stands out:\n\n---\n\n## \ud83d\udcc9 HFBs / PAs Underperforming Week-Over-Week\n\n### \ud83d\udd34 Critical Decliners\n\n| HFB | WoW Growth | Net Sales (7d) | Prior Week |\n|---|---|---|---|\n| **Bedroom** | -46.0% | \u20ac11,372 | \u20ac21,049 |\n| **Tables & Desks** | -30.0% | \u20ac22,312 | \u20ac31,870 |\n| **Chairs** | -27.6% | \u20ac23,125 | \u20ac31,922 |\n\n### \ud83d\udfe1 Notable Decliners\n\n| HFB | WoW Growth | Net Sales (7d) | Prior Week |\n|---|---|---|---|\n| **Sofas & Armchairs** | -8.0% | \u20ac43,777 | \u20ac47,578 |\n| **Hallway** | -1.6% | \u20ac37,445 | \u20ac38,053 |\n\n---\n\n## \ud83d\udd0d Key Articles Driving the Drop\n\nThese are the **fastest-declining individual articles** \u2014 all pointing back to the HFBs above:\n\n| Article | Series | Description | Recent Net | Prior Net | WoW Change |\n|---|---|---|---|---|---|\n| 901234 | POVIK | Chair | \u20ac5,375 | \u20ac12,309 | **-56.3%** |\n| 789012 | BEXTA | Coffee Table | \u20ac5,388 | \u20ac12,261 | **-56.1%** |\n| 890123 | LACKO | Dining Table | \u20ac5,131 | \u20ac10,612 | **-51.6%** |\n| 3012345 | MAROV | Bed Base | \u20ac5,395 | \u20ac10,719 | **-49.7%** |\n| 2123456 | HOLVO | Dining Chair | \u20ac6,058 | \u20ac10,007 | **-39.5%** |\n| 1123456 | FRIHO | Chest of Drawers | \u20ac5,381 | \u20ac7,414 | **-27.4%** |\n\n---\n\n## \ud83d\udca1 So What?\n\nThe **Chairs, Tables & Desks, and Bedroom** HFBs are the biggest concern \u2014 they account for significant revenue drops despite the overall store being above forecast. This suggests:\n\n1. **Conversion is the issue, not traffic** \u2014 if traffic is healthy but these PAs are down, customers are walking through but not buying.\n2. **Check OSA first** \u2014 are POVIK, BEXTA, LACKO, and MAROV actually available on the floor? OOS or empty display bays kill conversion instantly.\n3. **Check displays & navigation** \u2014 are the PA solutions inspiring? Any missing price tags or displaced signage?\n\n---\n\n\u2192 **Action:**\n- \ud83d\udd34 **Walk Chairs, Tables & Desks, and Bedroom PAs today** \u2014 check availability, display quality, and pricing for POVIK, BEXTA, LACKO, and MAROV specifically.\n- \ud83d\udfe1 **Check OSA data for the top declining articles** \u2014 run a stock alert check to see if OOS is the root cause.\n- \ud83d\udccb **Raise in today's huddle** \u2014 assign a PA owner to investigate and report back by EOD.\n\nWant me to pull the stock alerts for these specific articles to see if OOS is the root cause?",
+    "latency_s": 25.9,
+    "response_length": 2380,
+    "truthfulness": 2,
+    "completeness": 1,
+    "relevance": 2,
+    "actionability": 3,
+    "data_grounding": 3,
+    "limitation_honesty": 1,
+    "overall": 1,
+    "explanation": "The response completely fails to acknowledge that traffic/footfall data is not available in the dataset, which is the critical fact required for this question. Instead, the AI fabricates an answer by presenting WoW sales declines as if they answer the 'high traffic but underperforming' question, without any actual traffic data to support that framing. The response even states 'Conversion is the issue, not traffic' as if traffic data was consulted, which is a hallucination of the analytical premise. While the sales decline data may be real, the entire framing of the answer is misleading and dishonest about data limitations.",
+    "errors_found": [
+      "Traffic/footfall data is not available in the dataset but this is never acknowledged",
+      "The response claims to identify PAs with 'high traffic' but no traffic data exists",
+      "States 'Conversion is the issue, not traffic' without any traffic data to support this claim",
+      "The question is unanswerable from available data, but the AI answers it as if it were fully answerable",
+      "Article IDs and series names (POVIK, BEXTA, LACKO, etc.) cannot be verified against ground truth and may be fabricated"
+    ]
+  },
+  {
+    "id": "Q05",
+    "question": "Which articles have declining sales momentum over the last 30-days?",
+    "category": "sales",
+    "answerable": true,
+    "response": "Here's a clear picture of what's losing momentum across the store:\n\n---\n\n## \ud83d\udcc9 Articles with Declining Sales Momentum\n\nThese are week-over-week declines \u2014 comparing recent sales to the prior period. Sorted by steepest drop:\n\n| # | Article | Description | Recent Sales | Prior Sales | Change |\n|---|---------|-------------|-------------|------------|--------|\n| \ud83d\udd34 | **POVIK** Chair | 901234 | \u20ac5,375 | \u20ac12,309 | **-56.3%** |\n| \ud83d\udd34 | **BEXTA** Coffee Table | 789012 | \u20ac5,388 | \u20ac12,261 | **-56.1%** |\n| \ud83d\udd34 | **LACKO** Dining Table | 890123 | \u20ac5,131 | \u20ac10,612 | **-51.6%** |\n| \ud83d\udd34 | **MAROV** Bed Base | 3012345 | \u20ac5,395 | \u20ac10,719 | **-49.7%** |\n| \ud83d\udfe1 | **KOVARP** Mirror | 2890123 | \u20ac5,977 | \u20ac10,330 | **-42.1%** |\n| \ud83d\udfe1 | **KIVON** Bookshelf | 1456789 | \u20ac2,441 | \u20ac4,198 | **-41.9%** |\n| \ud83d\udfe1 | **HOLVO** Dining Chair | 2123456 | \u20ac6,058 | \u20ac10,007 | **-39.5%** |\n| \ud83d\udfe1 | **HYLTV** Shoe Cabinet | 2567890 | \u20ac6,787 | \u20ac10,953 | **-38.0%** |\n| \ud83d\udfe1 | **STRAV** Hallway Bench | 2678901 | \u20ac4,172 | \u20ac6,569 | **-36.5%** |\n| \ud83d\udfe2 | **KALLO** Shelf Unit | 234567 | \u20ac4,533 | \u20ac6,575 | **-31.1%** |\n\n---\n\n## \ud83d\udd0d Key Observations\n\n1. **\u26a0\ufe0f BEXTA Coffee Table is a double concern** \u2014 it's one of our **top 30-day sellers** (\u20ac49K, #2 overall) but is now declining sharply at **-56.1%**. This is a significant risk to monthly performance.\n\n2. **MAROV Bed Base** is also in our **top 10 sellers** (\u20ac40K, #10) while dropping **-49.7%** \u2014 worth investigating urgently.\n\n3. **The top 4 decliners are all -50% or worse** \u2014 this is a cluster of critical momentum loss across Dining, Seating, and Bedroom HFBs.\n\n4. **Hallway/Entryway articles** (HYLTV Shoe Cabinet, STRAV Hallway Bench) are both declining, which could point to a category-level issue.\n\n---\n\n## \ud83d\udca1 What to Do Next\n\n- **Check OSA first** \u2014 are these articles actually available on the shop floor? A drop this sharp often points to a stock or placement issue.\n- **Review BEXTA & MAROV specifically** \u2014 they're top sellers that are now losing steam. Prioritise these two today.\n- **Look at pricing or recent range changes** \u2014 any markdowns removed or price adjustments in the last few weeks?\n- **Check if a promotion ended** \u2014 a 50%+ drop can also signal that a deal or campaign drove the prior-period spike.\n\n\u2192 **Action:** Bring BEXTA Coffee Table and MAROV Bed Base to the huddle today \u2014 both are high-revenue articles with alarming declines. Verify OSA and check if there's a floor or stock explanation before escalating further.",
+    "latency_s": 19.4,
+    "response_length": 2442,
+    "truthfulness": 5,
+    "completeness": 5,
+    "relevance": 5,
+    "actionability": 5,
+    "data_grounding": 5,
+    "limitation_honesty": null,
+    "overall": 5,
+    "explanation": "The response accurately reflects all ground truth facts with exact percentage declines matching the provided data. Both critical facts (POVIK Chair at -56.3% and BEXTA Coffee Table at -56.1%) are prominently featured. The response goes beyond the minimum requirements by including additional declining articles, providing context about their overall sales performance, and offering concrete actionable next steps for the store manager.",
+    "errors_found": []
+  },
+  {
+    "id": "Q14",
+    "question": "Which high-selling articles are currently out of stock?",
+    "category": "stock",
+    "answerable": true,
+    "response": "Here's the picture \u2014 **8 of our top-selling articles are at risk**, with stock levels critically below forecast demand.\n\n---\n\n## \ud83d\udd34 High-Selling Articles with Stock Issues\n\n| # | Article | Description | Units Sold | Net Sales (\u20ac) | Stock Available | Demand Forecast | Gap |\n|---|---------|-------------|-----------|--------------|----------------|----------------|-----|\n| 1 | LANDO Storage bench | #1567890 | 278 | \u20ac54,874 | **1** | 34 | -33 |\n| 2 | MOLBY Bed frame | #456789 | 186 | \u20ac44,285 | 12 | 33 | -21 |\n| 3 | LANGV Storage box | #2901234 | 174 | \u20ac39,943 | 19 | 33 | -14 |\n| 4 | ELVEN Sofa | #345678 | 168 | \u20ac33,734 | **7** | 25 | -18 |\n| 5 | PAXON Wardrobe | #567890 | 154 | \u20ac31,095 | 28 | 46 | -18 |\n| 6 | KALLO Shelf unit | #234567 | 158 | \u20ac29,220 | 23 | 41 | -18 |\n| 7 | HELNO TV unit | #678901 | 139 | \u20ac28,384 | 15 | 39 | -24 |\n| 8 | FRIHO Chest of drawers | #1123456 | 123 | \u20ac25,281 | **2** | 25 | -23 |\n\n---\n\n## \ud83d\udea8 Most Critical (Almost Empty)\n\n- \ud83d\udd34 **LANDO Storage bench** \u2014 Only **1 unit** left against a demand of 34. Effectively out of stock.\n- \ud83d\udd34 **FRIHO Chest of drawers** \u2014 Only **2 units** left against a demand of 25. Critically low.\n- \ud83d\udfe1 **ELVEN Sofa** \u2014 7 units left, well below the 25-unit demand forecast.\n\n---\n\n## \u2192 Actions:\n1. **Immediate replenishment check** on LANDO Storage bench and FRIHO Chest of drawers \u2014 these will be fully OOS within hours at current sell-through.\n2. **Check inbound delivery schedule** for MOLBY, ELVEN, PAXON, KALLO, and HELNO \u2014 all are trending toward OOS before the next likely replenishment.\n3. **Brief the sales floor team** on alternatives to recommend for LANDO and FRIHO while stock is unavailable \u2014 protect conversion even when availability is limited.\n\nWith New Year's coming up, losing these high-sellers now could have a real impact on our year-end numbers. Let's get these resolved today! \ud83c\udfaf",
+    "latency_s": 14.8,
+    "response_length": 1855,
+    "truthfulness": 4,
+    "completeness": 5,
+    "relevance": 5,
+    "actionability": 5,
+    "data_grounding": 5,
+    "limitation_honesty": null,
+    "overall": 5,
+    "explanation": "The response accurately identifies LANDO as the top seller with critical stock (1 unit vs 34 demand) and correctly states that 8 of the top sellers have stock issues, covering all critical facts. The data for MOLBY and LANGV also matches the ground truth. Minor concern is that some article names and numbers (ELVEN, PAXON, KALLO, HELNO, FRIHO) cannot be verified against provided ground truth, but they don't contradict it either. The response is highly actionable with specific next steps and rich in data points.",
+    "errors_found": [
+      "Some article names and article numbers (ELVEN, PAXON, KALLO, HELNO, FRIHO) cannot be verified against provided ground truth and may be hallucinated or incorrectly named"
+    ]
+  },
+  {
+    "id": "Q17",
+    "question": "What availability risks should I escalate today?",
+    "category": "stock",
+    "answerable": true,
+    "response": "Here's your full availability picture for today's huddle. The situation needs urgent attention \u2014 4 items will be OOS **today**.\n\n---\n\n## \ud83d\udd34 Availability Escalations \u2014 30 Dec 2024\n\n### \ud83d\udd34 Critical: Going OOS Today (Act Now)\n\n| Article | Series | Stock Left | Burn Rate/Day | Hours Left | YTD Sales |\n|---|---|---|---|---|---|\n| Storage bench | LANDO | **1 unit** | 8.4 | ~2 hrs | \u20ac54,874 |\n| Bed frame | MOLBY | **12 units** | 18.9 | ~14 hrs | \u20ac44,285 |\n| Chest of drawers | FRIHO | **2 units** | 2.7 | ~17 hrs | \u20ac25,281 |\n| Sofa | ELVEN | **7 units** | 4.6 | ~36 hrs | \u20ac33,734 |\n\nThese are all **top sellers** \u2014 collectively they've generated over **\u20ac158,000** in sales. Going OOS on these, especially heading into New Year's, is a significant revenue and customer experience risk.\n\n---\n\n### \ud83d\udfe1 Warning: OOS Within 5 Days\n\n| Article | Series | Stock Left | Burn Rate/Day | Days Left |\n|---|---|---|---|---|\n| Shelf unit | KALLO | 23 units | 5.3 | ~4.4 days |\n| Storage box | LANGV | 19 units | 3.9 | ~4.9 days |\n\nBoth are top sellers too \u2014 plan replenishment **this week** before they hit the same wall.\n\n---\n\n### Summary Snapshot\n\n- **0** articles currently OOS\n- **8** articles low stock (vs. demand)\n- **4** articles going OOS **today**\n- All 8 at-risk articles are confirmed top sellers\n\n---\n\n## \u2192 Actions\n\n1. **LANDO Storage bench** \u2014 Effectively OOS now (1 unit). Check for backroom stock or incoming delivery immediately. Consider a \"last unit\" display hold.\n2. **MOLBY Bed frame** \u2014 12 units at a burn rate of 18.9/day. Escalate replenishment order today \u2014 no later than this morning.\n3. **FRIHO Chest of drawers** \u2014 2 units. Urgent replenishment or inter-store transfer needed.\n4. **ELVEN Sofa** \u2014 7 units, ~36 hrs. Replenishment order must be placed today.\n5. **KALLO & LANGV** \u2014 Plan replenishment before end of week. Don't let these become tomorrow's crisis.\n\n> \ud83d\udca1 With New Year's Eve tomorrow, demand is likely to stay high. Getting ahead of these gaps now protects both sales and the customer experience.",
+    "latency_s": 17.0,
+    "response_length": 2014,
+    "truthfulness": 4,
+    "completeness": 5,
+    "relevance": 5,
+    "actionability": 5,
+    "data_grounding": 5,
+    "limitation_honesty": null,
+    "overall": 5,
+    "explanation": "The response correctly identifies all 4 critical articles (LANDO, MOLBY, FRIHO, ELVEN) and the 2 warning items, with accurate burn rates, stock levels, and hours-until-OOS calculations that align well with ground truth. The YTD sales figures and LANGV warning item cannot be verified against ground truth but are presented consistently. The ELVEN sofa at ~36 hours (~1.5 days) is slightly borderline for 'today' but is correctly flagged as critical. The response is highly actionable with specific next steps for each article.",
+    "errors_found": [
+      "ELVEN Sofa shown as going OOS 'today' but ground truth shows 1.5 days \u2014 technically tomorrow rather than today, though still within the critical threshold",
+      "LANGV Storage box listed as a warning item but not present in ground truth facts \u2014 cannot verify this data point"
+    ]
+  }
+]

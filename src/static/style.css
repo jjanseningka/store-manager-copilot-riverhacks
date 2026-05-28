@@ -806,3 +806,223 @@ p { color: rgb(var(--colour-text-and-icon-2)); }
     .snapshot-grid { grid-template-columns: 1fr; }
     .tabs { overflow-x: auto; }
 }
+
+/* ---- Proactive Insights Banner ---- */
+.insights-banner {
+    background: linear-gradient(135deg, rgb(var(--colour-informative-bg)), rgba(var(--colour-neutral-2), 0.5));
+    border: 1px solid rgba(0, 88, 163, 0.2);
+    border-radius: var(--radius-large);
+    padding: var(--space-100) var(--space-150);
+    margin-bottom: var(--space-150);
+}
+
+.insights-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-75);
+}
+
+.insights-icon {
+    font-size: 1.3rem;
+}
+
+.insights-count {
+    background: rgb(var(--colour-negative));
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.insights-list {
+    margin-top: var(--space-100);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-75);
+}
+
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-100);
+    background: rgb(var(--colour-elevation-1));
+    border-radius: var(--radius-medium);
+    padding: var(--space-100);
+    border-left: 4px solid transparent;
+}
+
+.insight-item.severity-critical { border-left-color: rgb(var(--colour-negative)); }
+.insight-item.severity-warning { border-left-color: rgb(var(--colour-caution)); }
+.insight-item.severity-positive { border-left-color: rgb(var(--colour-positive)); }
+.insight-item.severity-info { border-left-color: rgb(var(--colour-informative)); }
+
+.insight-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.insight-content { flex: 1; }
+
+.insight-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: rgb(var(--colour-text-and-icon-1));
+}
+
+.insight-message {
+    font-size: 0.85rem;
+    color: rgb(var(--colour-text-and-icon-2));
+    margin-top: 2px;
+}
+
+.insight-action {
+    font-size: 0.8rem;
+    color: var(--ikea-blue);
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.insight-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.insight-badge.badge-critical { background: rgba(var(--colour-negative), 0.15); color: rgb(var(--colour-negative)); }
+.insight-badge.badge-warning { background: rgba(var(--colour-caution), 0.15); color: rgb(var(--colour-caution-dark, 180, 120, 0)); }
+.insight-badge.badge-positive { background: rgba(var(--colour-positive), 0.15); color: rgb(var(--colour-positive)); }
+.insight-badge.badge-info { background: rgba(var(--colour-informative), 0.15); color: rgb(var(--colour-informative)); }
+
+/* ---- What-If Tab ---- */
+.context-panel {
+    background: rgb(var(--colour-elevation-2));
+    border-radius: var(--radius-large);
+    padding: var(--space-150);
+    margin-bottom: var(--space-150);
+}
+
+.context-panel h3 {
+    margin: 0 0 var(--space-100) 0;
+    font-size: 1rem;
+}
+
+.context-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-100);
+}
+
+.context-card {
+    background: rgb(var(--colour-elevation-1));
+    border-radius: var(--radius-medium);
+    padding: var(--space-100);
+}
+
+.context-card h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.85rem;
+    color: rgb(var(--colour-text-and-icon-2));
+}
+
+.context-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.whatif-scenarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-150);
+}
+
+.whatif-card {
+    background: rgb(var(--colour-elevation-1));
+    border: 1px solid rgb(var(--colour-elevation-1-border));
+    border-radius: var(--radius-large);
+    padding: var(--space-150);
+}
+
+.whatif-card h3 {
+    margin: 0 0 var(--space-50) 0;
+    font-size: 1rem;
+}
+
+.whatif-card p {
+    margin: 0 0 var(--space-100) 0;
+    font-size: 0.85rem;
+    color: rgb(var(--colour-text-and-icon-2));
+}
+
+.whatif-inputs {
+    display: flex;
+    gap: var(--space-75);
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: var(--space-100);
+}
+
+.whatif-inputs label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: rgb(var(--colour-text-and-icon-2));
+    font-weight: 600;
+}
+
+.whatif-inputs input {
+    padding: 8px 12px;
+    border: 1px solid rgb(var(--colour-elevation-1-border));
+    border-radius: var(--radius-medium);
+    font-size: 0.9rem;
+    width: 140px;
+    font-family: inherit;
+}
+
+.whatif-inputs input:focus {
+    outline: none;
+    border-color: var(--ikea-blue);
+    box-shadow: 0 0 0 2px rgba(0, 88, 163, 0.15);
+}
+
+.whatif-result {
+    margin-top: var(--space-100);
+}
+
+.whatif-result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-75);
+}
+
+.whatif-metric {
+    background: rgb(var(--colour-elevation-2));
+    border-radius: var(--radius-medium);
+    padding: var(--space-75) var(--space-100);
+}
+
+.whatif-metric .label {
+    font-size: 0.75rem;
+    color: rgb(var(--colour-text-and-icon-3));
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.whatif-metric .value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: rgb(var(--colour-text-and-icon-1));
+}
+
+.whatif-metric .delta {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.whatif-metric .delta.positive { color: rgb(var(--colour-positive)); }
+.whatif-metric .delta.negative { color: rgb(var(--colour-negative)); }

@@ -8,7 +8,12 @@ import anthropic
 
 from data.loader import DataStore
 from llm.prompts import REPORT_PROMPT, SYSTEM_PROMPT, TOOL_DEFINITIONS
+from llm.evaluators import critique_report, evaluate_report, evaluate_chat_response
+from llm.memory import get_memory
 from tools.actions import generate_daily_priorities
+from tools.external_context import get_store_context
+from tools.insights import generate_proactive_insights
+from tools.whatif import whatif_price_change, whatif_availability_improvement, whatif_demand_surge
 from tools.margin import (
     get_hfb_margin_analysis,
     get_low_margin_alerts,
@@ -61,6 +66,15 @@ def _execute_tool(tool_name: str, tool_input: dict, store: DataStore, bu_sk: int
             store, bu_sk, args["period"]
         ),
         "generate_daily_priorities": lambda _: generate_daily_priorities(store, bu_sk),
+        "get_store_context": lambda _: get_store_context(store.today, bu_sk),
+        "get_proactive_insights": lambda _: generate_proactive_insights(store, bu_sk),
+        "whatif_price_change": lambda args: whatif_price_change(
+            store, bu_sk, args["item_no"], args["price_change_pct"], args.get("period", "30d")
+        ),
+        "whatif_availability_improvement": lambda _: whatif_availability_improvement(store, bu_sk),
+        "whatif_demand_surge": lambda args: whatif_demand_surge(
+            store, bu_sk, args["demand_increase_pct"], args.get("period", "7d")
+        ),
     }
 
     handler = dispatch.get(tool_name)
@@ -87,19 +101,29 @@ class RetailAgent:
         self.store = store
         self.bu_sk = bu_sk
         self.messages: list[dict] = []
+        self.memory = get_memory()
+        self.session_id: str = ""
 
         # Get store name for context
         bu_row = store.business_units[store.business_units["bu_sk"] == bu_sk]
         self.store_name = bu_row.iloc[0]["bu_name"] if len(bu_row) > 0 else f"Store {bu_sk}"
 
     def _get_system_prompt(self) -> str:
-        return (
+        base = (
             f"{SYSTEM_PROMPT}\n\n"
             f"## Current Context\n"
             f"- **Store**: {self.store_name}\n"
             f"- **Data as of**: {self.store.today.strftime('%A, %d %B %Y')}\n"
             f"- **Store ID (bu_sk)**: {self.bu_sk}\n"
         )
+        # Inject memory context if available
+        if self.session_id:
+            mem_ctx = self.memory.get_context_for_llm(
+                self.session_id, f"store_{self.bu_sk}"
+            )
+            if mem_ctx:
+                base += f"\n{mem_ctx}\n"
+        return base
 
     def _run_conversation(self, messages: list[dict]) -> str:
         """Run a multi-turn conversation with tool-calling loop."""
@@ -139,21 +163,108 @@ class RetailAgent:
 
         return "I ran out of analysis rounds. Please try a more specific question."
 
-    def chat(self, user_message: str) -> str:
-        """Send a user message and get a response. Maintains conversation history."""
+    def chat(self, user_message: str) -> tuple[str, dict | None]:
+        """Send a user message and get a response with lightweight evaluation.
+
+        Flow:
+        1. Generate response (tool-calling conversation)
+        2. Evaluator checks quality → pass/fail
+        3. If fail: retry once with the evaluator's hint
+
+        Returns:
+            (response_text, evaluation_result)
+        """
         self.messages.append({"role": "user", "content": user_message})
+        if self.session_id:
+            self.memory.add_message(self.session_id, "user", user_message)
 
         # Build messages for API call (full history)
         result = self._run_conversation(list(self.messages))
 
-        self.messages.append({"role": "assistant", "content": result})
-        return result
+        # --- Lightweight evaluation ---
+        evaluation = None
+        try:
+            evaluation = evaluate_chat_response(user_message, result)
+            if not evaluation.get("pass", True):
+                # Retry once with the evaluator's feedback
+                hint = evaluation.get("revision_hint", "")
+                issues = ", ".join(evaluation.get("issues", []))
+                retry_prompt = (
+                    f"Your previous answer had quality issues: {issues}. "
+                    f"Hint: {hint}. "
+                    f"Please answer the original question again, addressing these issues. "
+                    f"Original question: {user_message}"
+                )
+                retry_messages = list(self.messages)
+                retry_messages.append({"role": "assistant", "content": result})
+                retry_messages.append({"role": "user", "content": retry_prompt})
+                result = self._run_conversation(retry_messages)
+                # Re-evaluate
+                try:
+                    evaluation = evaluate_chat_response(user_message, result)
+                except Exception:
+                    pass
+        except Exception:
+            pass
 
-    def generate_report(self) -> str:
-        """Generate the daily commercial briefing report."""
-        # Use a fresh conversation for the report
+        self.messages.append({"role": "assistant", "content": result})
+        if self.session_id:
+            self.memory.add_message(self.session_id, "assistant", result)
+        return result, evaluation
+
+    def generate_report(self) -> tuple[str, dict | None]:
+        """Generate the daily commercial briefing with critic-refine-evaluate loop.
+
+        Flow:
+        1. Generate draft report (tool-calling conversation)
+        2. Critic reviews the draft → structured feedback
+        3. If critic says 'needs_revision': refine with feedback
+        4. Evaluator scores the final version → pass/fail with rubric
+
+        Returns:
+            (report_text, evaluation_result)
+        """
+        # --- Step 1: Generate draft ---
         messages = [{"role": "user", "content": REPORT_PROMPT}]
-        return self._run_conversation(messages)
+        draft = self._run_conversation(messages)
+
+        # --- Step 2: Critic reviews ---
+        try:
+            critique = critique_report(draft)
+        except Exception:
+            # If critic fails, return draft as-is
+            return draft, None
+
+        quality = critique.get("overall_quality", "good")
+
+        # --- Step 3: Refine if needed ---
+        if quality in ("needs_revision", "poor"):
+            revision_instructions = critique.get("revision_instructions", "")
+            issues_text = "\n".join(
+                f"- [{i['severity']}] {i['section']}: {i['issue']} → {i['suggestion']}"
+                for i in critique.get("issues", [])
+            )
+            refine_prompt = (
+                f"Your draft was reviewed. Here is the feedback:\n\n"
+                f"**Quality**: {quality}\n\n"
+                f"**Issues**:\n{issues_text}\n\n"
+                f"**Revision instructions**: {revision_instructions}\n\n"
+                f"Please revise the report to address ALL issues above. "
+                f"Keep all the data you already gathered — just improve the presentation, "
+                f"fill gaps, and strengthen actionability. Output the complete revised report."
+            )
+            # Continue the conversation with the critique
+            messages.append({"role": "assistant", "content": draft})
+            messages.append({"role": "user", "content": refine_prompt})
+            draft = self._run_conversation(messages)
+
+        # --- Step 4: Final evaluation ---
+        try:
+            evaluation = evaluate_report(draft)
+        except Exception:
+            evaluation = None
+
+        return draft, evaluation
 
     def reset_history(self) -> None:
         """Clear conversation history."""

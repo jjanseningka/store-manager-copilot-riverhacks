@@ -1,0 +1,23 @@
+Hej Assistant Evaluation Report — 20260528_162649
+Questions: 5
+Pass rate: 80%
+
+Q01 | sales | overall=5 | T=5 C=5 R=5 A=5 D=5 | 11.9s
+  Q: What were the last 7-days, 30-days and YTD total sales for my store vs forecast?
+  → The response accurately reflects all ground truth facts across all three time periods with exact matching numbers for units, revenue, forecast, and percentage gaps. All critical facts are present and clearly presented in a well-structured table. The response is highly actionable, suggesting next steps like investigating HFB/article drivers and stock risks.
+
+Q03 | sales | overall=1 | T=2 C=1 R=2 A=3 D=3 | 24.4s
+  Q: Which PA underperformed sales week over week despite high traffic?
+  → The response completely fails to acknowledge that traffic/footfall data is not available in the dataset, which is the critical fact required. Instead, it fabricates a 'demand factor 1.4x' and confidently asserts 'traffic is high' without any data basis. The article names (POVIK, BEXTA, LACKO, MAROV, HOLVO) and article numbers appear to be hallucinated since no ground truth confirms them. The response should have clearly stated that traffic data is unavailable and therefore the question cannot be answered as posed.
+
+Q05 | sales | overall=5 | T=5 C=5 R=5 A=5 D=5 | 20.0s
+  Q: Which articles have declining sales momentum over the last 30-days?
+  → The response accurately matches all ground truth facts with correct article names, decline percentages, and rankings. All critical facts are present (POVIK at -56.3% and BEXTA at -56.1%). The response provides rich data grounding with specific figures, clear actionable next steps, and contextualizes the declining articles within the broader store performance.
+
+Q14 | stock | overall=5 | T=4 C=5 R=5 A=5 D=5 | 14.7s
+  Q: Which high-selling articles are currently out of stock?
+  → The response accurately captures all critical facts including LANDO's critical stock situation (1 unit vs 34 demand) and the 8 of top 30 sellers with stock issues. The data presented aligns well with ground truth for the verified items. The response is highly actionable with clear prioritization and specific next steps. Minor uncertainty exists around the accuracy of articles not in the ground truth (ELVEN, PAXON, KALLO, HELNO, FRIHO) which could be hallucinated, hence a slight deduction in truthfulness.
+
+Q17 | stock | overall=5 | T=4 C=5 R=5 A=5 D=4 | 18.1s
+  Q: What availability risks should I escalate today?
+  → The response correctly identifies all 4 critical articles (LANDO, MOLBY, FRIHO, ELVEN) and the warning item (KALLO), matching the ground truth OOS timelines with reasonable accuracy (e.g., ~2 hrs for LANDO's 0.1 days, ~15 hrs for MOLBY's 0.6 days). The response includes additional articles like LANGV, PAXON, and HELNO that aren't in the ground truth but don't contradict it — these may be hallucinated or from extended data. YTD sales figures and burn rates appear to be fabricated since they aren't in the ground truth, which lowers truthfulness slightly. However, all critical facts are present and the response is highly actionable with clear escalation priorities.

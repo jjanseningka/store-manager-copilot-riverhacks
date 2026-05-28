@@ -43,8 +43,20 @@
         <nav class="tabs">
             <button class="tab active" data-tab="briefing">📋 Daily Briefing</button>
             <button class="tab" data-tab="chat">💬 Ask Me Anything</button>
+            <button class="tab" data-tab="whatif">🔮 What-If Analysis</button>
             <button class="tab" data-tab="data">📊 Data Explorer</button>
         </nav>
+
+        <!-- Proactive Insights Banner -->
+        <div class="insights-banner" id="insights-banner" style="display:none;">
+            <div class="insights-header">
+                <span class="insights-icon">⚡</span>
+                <strong>Proactive Alerts</strong>
+                <span class="insights-count" id="insights-count"></span>
+                <button class="btn btn-small" onclick="toggleInsights()" id="insights-toggle">Show</button>
+            </div>
+            <div class="insights-list" id="insights-list" style="display:none;"></div>
+        </div>
 
         <!-- Tab: Daily Briefing -->
         <section class="tab-content active" id="tab-briefing">
@@ -115,6 +127,57 @@
                     <input type="text" id="chat-input" placeholder="Ask me anything about your store..." 
                            onkeydown="if(event.key==='Enter')sendChat()">
                     <button class="btn btn-primary" onclick="sendChat()">Send</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab: What-If Analysis -->
+        <section class="tab-content" id="tab-whatif">
+            <div class="tab-header">
+                <h1>What-If Analysis</h1>
+                <p class="store-label">Explore scenarios and simulate outcomes</p>
+            </div>
+
+            <!-- External Context -->
+            <div class="context-panel" id="context-panel">
+                <h3>📅 External Context</h3>
+                <div class="context-grid" id="context-grid">Loading...</div>
+            </div>
+
+            <!-- What-If Scenarios -->
+            <div class="whatif-scenarios">
+                <div class="whatif-card">
+                    <h3>💰 Price Change Simulation</h3>
+                    <p>What happens if you change the price of an article?</p>
+                    <div class="whatif-inputs">
+                        <label>Article (item_no)
+                            <input type="number" id="whatif-item-no" placeholder="e.g., 1001">
+                        </label>
+                        <label>Price change %
+                            <input type="number" id="whatif-price-pct" placeholder="e.g., -10 or +15" step="1">
+                        </label>
+                        <button class="btn btn-primary" onclick="runPriceWhatIf()">Simulate</button>
+                    </div>
+                    <div class="whatif-result" id="whatif-price-result"></div>
+                </div>
+
+                <div class="whatif-card">
+                    <h3>📦 Availability Uplift</h3>
+                    <p>How much revenue are we losing from out-of-stock items?</p>
+                    <button class="btn btn-primary" onclick="runAvailabilityWhatIf()">Calculate Uplift</button>
+                    <div class="whatif-result" id="whatif-availability-result"></div>
+                </div>
+
+                <div class="whatif-card">
+                    <h3>📈 Demand Surge Stress Test</h3>
+                    <p>What if demand increases? Which items would run out?</p>
+                    <div class="whatif-inputs">
+                        <label>Demand increase %
+                            <input type="number" id="whatif-demand-pct" placeholder="e.g., 30" step="5">
+                        </label>
+                        <button class="btn btn-primary" onclick="runDemandWhatIf()">Stress Test</button>
+                    </div>
+                    <div class="whatif-result" id="whatif-demand-result"></div>
                 </div>
             </div>
         </section>
