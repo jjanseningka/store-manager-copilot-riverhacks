@@ -394,6 +394,9 @@ p { color: rgb(var(--colour-text-and-icon-2)); }
     flex: 1;
     padding: var(--space-150) var(--space-200);
     max-width: 1200px;
+    height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 /* ---- Tabs ---- */
@@ -994,6 +997,8 @@ p { color: rgb(var(--colour-text-and-icon-2)); }
     .main {
         margin-left: 0;
         padding: var(--space-100);
+        height: auto;
+        overflow-y: visible;
     }
 
     .sidebar-header { display: flex; align-items: center; gap: var(--space-100); text-align: left; }
