@@ -167,3 +167,26 @@ Append one entry after each meaningful agentic coding session.
 **Failure or surprise.** The agent confidently answers questions about data dimensions it doesn't have (traffic, footfall). It should refuse or caveat instead of reframing the question with fabricated framing.
 
 **Rule to add.** Add to the system prompt: "If the user asks about data you cannot access (traffic, footfall, conversion rates, time-of-day patterns, customer counts), explicitly state that this data is not available in the current dataset. Do not reframe the question to fit available data without acknowledging the limitation."
+
+---
+
+## 2026-05-28 — Session 4: Feature expansion + What-If removal
+
+**Task.** Expand the MVP with external context, what-if analysis, proactive insights, conversation memory, and alert scheduler. Then evaluate and refine.
+
+**Result.**
+- Added 6 new modules: `src/tools/external_context.py`, `src/tools/whatif.py`, `src/tools/insights.py`, `src/llm/memory.py`, `src/llm/scheduler.py`
+- Expanded tool definitions from 14 to 20 in `src/llm/prompts.py`
+- Added What-If tab, proactive insights banner, and external context panel to the UI
+- Fixed critical what-if margin bug (was scaling both net and gross by price change, keeping margin% flat; fixed to only scale gross/selling price)
+- Updated `docs/architecture/architecture.md` with comprehensive system documentation
+- **Removed the What-If tab** from the UI (HTML, JS) — kept backend tools so the chatbot can still use them via tool-calling
+
+**Failure or surprise.**
+1. **What-If UX was unusable** — the price change simulation required `item_no` input, but store managers don't know article numbers. Rather than building an article search bar (more complexity), the whole tab was removed. The LLM chatbot can still run what-if via natural language ("what if we drop KALLAX price by 10%?").
+2. **What-if margin calculation was wrong** — original code applied price change % to both gross and net prices, making margin% stay constant regardless of price change. This is economically wrong: COGS (net) doesn't change with selling price. The fix keeps net constant and only adjusts gross.
+3. **Pivoted from Streamlit to FastAPI+HTML** — Streamlit doesn't deploy well on Railway and has limited design control. FastAPI with static HTML/CSS/JS gave full control over IKEA Skapa design tokens and easy Railway deployment.
+
+**Rule to add.**
+- When building analysis UIs for business users, never use raw IDs (item_no, SKU) as input — always provide search/autocomplete or let the LLM handle entity resolution.
+- For what-if / simulation tools: always verify margin calculations with a manual example before shipping. If price changes, COGS stays constant — margin% must change.

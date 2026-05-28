@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any
 
 import anthropic
 
@@ -139,6 +138,7 @@ Minor issues (could be more concise, tone slightly off) should still pass.
 # ---------------------------------------------------------------------------
 # Evaluator functions
 # ---------------------------------------------------------------------------
+
 
 def _call_llm(system_prompt: str, user_content: str) -> dict:
     """Make a single LLM call and parse JSON response."""

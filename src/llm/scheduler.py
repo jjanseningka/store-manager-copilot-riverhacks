@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any
 from datetime import datetime
+from typing import Any
 
 from data.loader import DataStore
 from tools.insights import generate_proactive_insights
@@ -73,9 +73,7 @@ class AlertScheduler:
                 self.refresh_all()
 
         self._task = asyncio.create_task(_loop())
-        logger.info(
-            f"Alert scheduler started (refresh every {self.refresh_interval // 60} min)"
-        )
+        logger.info(f"Alert scheduler started (refresh every {self.refresh_interval // 60} min)")
 
     async def stop(self) -> None:
         """Stop the background refresh loop."""

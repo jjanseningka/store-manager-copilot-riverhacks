@@ -1,0 +1,90 @@
+flowchart TD
+    subgraph UI["Store Manager Interface"]
+        HTML["index.html - 3 Tabs: Briefing, Chat, Data"]
+        CSS["style.css - Skapa Design Tokens"]
+        JS["app.js - Fetch API client"]
+    end
+
+    subgraph BANNER["Proactive Insights Banner"]
+        INSIGHTS_UI["Auto-surfaced alerts on store load"]
+    end
+
+    subgraph SERVER["FastAPI Server - server.py"]
+        direction LR
+        REST["22 REST Endpoints"]
+        SESSIONS["Session Manager"]
+        PDF["PDF Export"]
+    end
+
+    subgraph ORCHESTRATOR["LLM Agent Orchestrator"]
+        AGENT["RetailAgent - Claude Sonnet 4.6"]
+        TOOLS["20 Tool Definitions"]
+        PROMPT["System Prompt - IKEA Tone of Voice"]
+        VALID["Response Validators"]
+        MEMORY["ConversationMemory"]
+    end
+
+    subgraph SCHEDULER["Alert Scheduler"]
+        CRON["Background refresh every 30 min"]
+        CACHE["Insights cache per store"]
+    end
+
+    subgraph ANALYTICS["Analytics Tools"]
+        SALES["sales.py - 5 functions"]
+        STOCK["stock.py - 4 functions"]
+        MARGIN["margin.py - 4 functions"]
+        ACTIONS["actions.py - priority generator"]
+    end
+
+    subgraph SPARRING["Analysis Sparring"]
+        WHATIF["whatif.py - price, availability, demand"]
+        INSIGHTS_ENGINE["insights.py - proactive alerts"]
+    end
+
+    subgraph CONTEXT["External Context"]
+        HOLIDAYS["Holiday Calendar - 19 events"]
+        PROMOS["Promotion Calendar - 12 campaigns"]
+        SEASONAL["Seasonal Patterns"]
+    end
+
+    subgraph DATA["Data Layer"]
+        LOADER["DataStore - 6 join helpers"]
+        PERIODS["periods.py - 7d, 30d, YTD, WoW"]
+        CSV[("CSV Files - Sales 363K, Forecast 87K, Stock 87K, Products 30, Stores 8")]
+    end
+
+    subgraph EXTERNAL["External Services"]
+        CLAUDE["Anthropic Claude API - claude-sonnet-4-6"]
+    end
+
+    HTML --> REST
+    INSIGHTS_UI --> REST
+
+    REST --> AGENT
+    REST --> SALES & STOCK & MARGIN & ACTIONS
+    REST --> WHATIF & INSIGHTS_ENGINE
+    REST --> HOLIDAYS
+
+    AGENT -->|"tool-calling loop x10"| TOOLS
+    AGENT <-->|messages| CLAUDE
+    AGENT --> VALID
+    AGENT --> MEMORY
+    AGENT --> PROMPT
+
+    TOOLS --> SALES & STOCK & MARGIN & ACTIONS
+    TOOLS --> WHATIF & INSIGHTS_ENGINE
+    TOOLS --> HOLIDAYS
+
+    CRON --> INSIGHTS_ENGINE
+    INSIGHTS_ENGINE --> CACHE
+    REST --> CACHE
+
+    SALES & STOCK & MARGIN --> LOADER
+    ACTIONS --> SALES & STOCK & MARGIN
+    WHATIF --> LOADER
+    LOADER --> PERIODS
+    LOADER --> CSV
+
+    INSIGHTS_ENGINE --> HOLIDAYS & PROMOS & SEASONAL
+
+    MEMORY -->|"preferences.json"| CSV

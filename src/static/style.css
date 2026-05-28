@@ -113,9 +113,8 @@ p { color: rgb(var(--colour-text-and-icon-2)); }
 }
 
 .sidebar-header .logo {
-    width: 88px;
+    width: 120px;
     margin-bottom: var(--space-75);
-    filter: brightness(0) invert(1);
 }
 
 .sidebar-header h2 {
@@ -453,6 +452,12 @@ p { color: rgb(var(--colour-text-and-icon-2)); }
     font-size: 3rem;
     display: block;
     margin-bottom: var(--space-100);
+}
+
+.empty-state .ikea-man {
+    width: 100px;
+    height: auto;
+    margin-bottom: var(--space-150);
 }
 
 .empty-state h3 {

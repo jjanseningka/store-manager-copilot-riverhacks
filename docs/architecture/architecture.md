@@ -6,7 +6,116 @@
 
 ![Target Architecture](../../assets/architecture-target.png)
 
-The diagram above shows the full target vision. Below we map each component to what is implemented today and what remains on the roadmap.
+The diagram above shows the full target vision. Below we map each component to what is implemented.
+
+## System Architecture (Current)
+
+![System Architecture](../../assets/architecture-system.png)
+
+---
+
+## System Overview
+
+```mermaid
+flowchart TD
+    subgraph UI["🖥️ Store Manager Interface"]
+        HTML["index.html\n3 Tabs: Briefing · Chat · Data"]
+        CSS["style.css\nSkapa Design Tokens"]
+        JS["app.js\nFetch API client"]
+    end
+
+    subgraph BANNER["⚡ Proactive Insights Banner"]
+        INSIGHTS_UI["Auto-surfaced alerts\non store load"]
+    end
+
+    subgraph SERVER["⚙️ FastAPI Server · server.py"]
+        direction LR
+        REST["22 REST Endpoints"]
+        SESSIONS["Session Manager"]
+        PDF["PDF Export"]
+    end
+
+    subgraph ORCHESTRATOR["🧠 LLM Agent Orchestrator"]
+        AGENT["RetailAgent\nClaude Sonnet 4.6"]
+        TOOLS["20 Tool Definitions"]
+        PROMPT["System Prompt\nIKEA Tone of Voice"]
+        VALID["Response Validators\narticle refs · numbers"]
+        MEMORY["ConversationMemory\nsession + preferences"]
+    end
+
+    subgraph SCHEDULER["⏰ Alert Scheduler"]
+        CRON["Background refresh\nevery 30 min"]
+        CACHE["Insights cache\nper store"]
+    end
+
+    subgraph ANALYTICS["📊 Analytics Tools"]
+        SALES["sales.py\n5 functions"]
+        STOCK["stock.py\n4 functions"]
+        MARGIN["margin.py\n4 functions"]
+        ACTIONS["actions.py\npriority generator"]
+    end
+
+    subgraph SPARRING["🔮 Analysis Sparring"]
+        WHATIF["whatif.py\nprice · availability · demand"]
+        INSIGHTS_ENGINE["insights.py\nproactive alerts"]
+    end
+
+    subgraph CONTEXT["🌍 External Context"]
+        HOLIDAYS["Holiday Calendar\n19 events"]
+        PROMOS["Promotion Calendar\n12 campaigns"]
+        SEASONAL["Seasonal Patterns\nmonthly demand factors"]
+    end
+
+    subgraph DATA["💾 Data Layer"]
+        LOADER["DataStore\n6 join helpers"]
+        PERIODS["periods.py\n7d · 30d · YTD · WoW"]
+        CSV[("CSV Files\nSales 363K · Forecast 87K\nStock 87K · Products 30\nStores 8")]
+    end
+
+    subgraph EXTERNAL["☁️ External Services"]
+        CLAUDE["Anthropic Claude API\nclaude-sonnet-4-6"]
+    end
+
+    %% UI → Server
+    HTML --> REST
+    INSIGHTS_UI --> REST
+
+    %% Server → Orchestrator
+    REST --> AGENT
+    REST --> SALES & STOCK & MARGIN & ACTIONS
+    REST --> WHATIF & INSIGHTS_ENGINE
+    REST --> HOLIDAYS
+
+    %% Orchestrator internals
+    AGENT -->|"tool-calling\nloop ×10"| TOOLS
+    AGENT <-->|messages| CLAUDE
+    AGENT --> VALID
+    AGENT --> MEMORY
+    AGENT --> PROMPT
+
+    %% Tools → Analytics
+    TOOLS --> SALES & STOCK & MARGIN & ACTIONS
+    TOOLS --> WHATIF & INSIGHTS_ENGINE
+    TOOLS --> HOLIDAYS
+
+    %% Scheduler
+    CRON --> INSIGHTS_ENGINE
+    INSIGHTS_ENGINE --> CACHE
+    REST --> CACHE
+
+    %% Analytics → Data
+    SALES & STOCK & MARGIN --> LOADER
+    ACTIONS --> SALES & STOCK & MARGIN
+    WHATIF --> LOADER
+    LOADER --> PERIODS
+    LOADER --> CSV
+
+    %% Context
+    INSIGHTS_ENGINE --> HOLIDAYS & PROMOS & SEASONAL
+
+    %% Memory persistence
+    MEMORY -->|"preferences.json"| CSV
+```
 
 ---
 
@@ -15,63 +124,11 @@ The diagram above shows the full target vision. Below we map each component to w
 **Hej Assistant** is a GenAI prototype built for the IKEA RiverHacks hackathon. It gives IKEA store managers a single interface to:
 
 1. **Get a daily AI-generated commercial briefing** — sales performance, stock health, margin analysis, and prioritised actions.
-2. **Ask follow-up questions** — conversational Q&A backed by real store data and Claude tool-calling.
-3. **Explore data** — interactive tables for top articles, HFB performance, stock alerts, declining articles, and more.
+2. **Ask follow-up questions** — conversational Q&A backed by real store data and Claude tool-calling. Supports what-if scenarios via chat (price changes, availability, demand surges).
+3. **Receive proactive alerts** — auto-surfaced insights on store load, refreshed every 30 minutes.
+4. **Explore data** — interactive tables for top articles, HFB performance, stock alerts, and more.
 
 The system runs as a single deployable unit on Railway (FastAPI + static HTML) and calls the Anthropic Claude API for LLM capabilities.
-
----
-
-## System Overview
-
-```mermaid
-flowchart TD
-    subgraph Frontend["Store Manager Interface"]
-        UI[HTML + CSS + JS]
-        TABS["3 Tabs: Briefing · Chat · Data Explorer"]
-        SKAPA["Skapa Design System tokens"]
-    end
-
-    subgraph Backend["FastAPI Server"]
-        API[REST API endpoints]
-        SESSIONS[Session Manager]
-    end
-
-    subgraph Orchestrator["LLM Agent Orchestrator"]
-        AGENT[RetailAgent]
-        TOOLS[14 Tool Definitions]
-        PROMPT[System Prompt + IKEA Tone]
-        VALID[Response Validators]
-    end
-
-    subgraph Analytics["Analytics Tools"]
-        SALES[Sales Analysis]
-        STOCK[Stock Analysis]
-        MARGIN[Margin Analysis]
-        ACTIONS[Priority Generator]
-    end
-
-    subgraph DataLayer["Data Layer"]
-        LOADER[DataStore]
-        PERIODS[Period Filters]
-        CSV[(CSV Files)]
-    end
-
-    subgraph External["External Services"]
-        CLAUDE[Claude Sonnet 4.6 API]
-    end
-
-    UI --> API
-    API --> AGENT
-    API --> SALES & STOCK & MARGIN & ACTIONS
-    AGENT -->|tool-calling loop| TOOLS
-    TOOLS --> SALES & STOCK & MARGIN & ACTIONS
-    AGENT <-->|messages| CLAUDE
-    SALES & STOCK & MARGIN & ACTIONS --> LOADER
-    LOADER --> PERIODS
-    LOADER --> CSV
-    AGENT --> VALID
-```
 
 ---
 
@@ -88,8 +145,9 @@ flowchart TD
 **Features:**
 - Store selector dropdown (8 IKEA stores)
 - Snapshot cards (7d/30d sales, stock health, margin)
+- ⚡ **Proactive insights banner** — auto-surfaces critical alerts on store load
 - AI report generation with PDF export
-- Chat with suggestion chips and session management
+- Chat with suggestion chips, session management, and what-if analysis via conversation
 - Data explorer with 6 views and period filters
 
 ### Layer 2 — FastAPI Server
@@ -98,7 +156,7 @@ flowchart TD
 |---|---|---|
 | Server | `src/server.py` | FastAPI app with CORS, static file serving, all API endpoints |
 
-**API Endpoints:**
+**API Endpoints (22 total):**
 
 | Method | Endpoint | Purpose |
 |---|---|---|
@@ -112,18 +170,27 @@ flowchart TD
 | `GET` | `/api/declining-articles/{bu_sk}` | Week-over-week declining articles |
 | `GET` | `/api/daily-priorities/{bu_sk}` | AI-ranked daily action list |
 | `GET` | `/api/margin/{bu_sk}` | Margin analysis |
+| `GET` | `/api/insights/{bu_sk}` | Proactive insights (cached by scheduler) |
+| `GET` | `/api/external-context/{bu_sk}` | Holidays, promotions, seasonal context |
+| `GET` | `/api/whatif/availability/{bu_sk}` | Revenue uplift from fixing OOS |
+| `GET` | `/api/memory/preferences/{bu_sk}` | Get user preferences |
 | `POST` | `/api/report` | Generate AI daily briefing |
 | `POST` | `/api/chat` | Conversational Q&A |
 | `POST` | `/api/chat/reset` | Reset chat session |
 | `POST` | `/api/export-pdf` | Export briefing as PDF |
+| `POST` | `/api/whatif/price/{bu_sk}` | Price change simulation |
+| `POST` | `/api/whatif/demand/{bu_sk}` | Demand surge stress test |
+| `POST` | `/api/memory/preferences/{bu_sk}` | Set user preferences |
 
 ### Layer 3 — LLM Agent Orchestrator
 
 | Component | Path | Description |
 |---|---|---|
-| Agent | `src/llm/agent.py` | `RetailAgent` class — manages Claude conversation with tool-calling loop (max 10 rounds) |
-| Prompts | `src/llm/prompts.py` | System prompt (IKEA retail expert persona), report template, 14 tool schemas |
+| Agent | `src/llm/agent.py` | `RetailAgent` class — Claude conversation with tool-calling loop (max 10 rounds), critic-refine-evaluate for reports |
+| Prompts | `src/llm/prompts.py` | System prompt (IKEA retail expert persona), report template, 20 tool schemas |
 | Validators | `src/llm/validators.py` | Post-generation checks: article name verification, number reasonableness |
+| Memory | `src/llm/memory.py` | `ConversationMemory` — session history + persistent preferences (JSON-backed) |
+| Scheduler | `src/llm/scheduler.py` | `AlertScheduler` — pre-computes proactive insights on 30-min refresh cycle |
 
 **How the agent works:**
 
@@ -135,7 +202,7 @@ flowchart TD
 6. Validators check the response for accuracy
 7. Response returned to the frontend
 
-**Tool inventory (14 tools):**
+**Tool inventory (20 tools):**
 
 | Tool | Module | What it analyses |
 |---|---|---|
@@ -153,8 +220,21 @@ flowchart TD
 | `get_low_margin_alerts` | `margin.py` | Below-threshold margin items |
 | `get_hfb_margin_analysis` | `margin.py` | Margin by HFB |
 | `generate_daily_priorities` | `actions.py` | Ranked action list combining all signals |
+| `get_store_context` | `external_context.py` | Holidays, promotions, seasonal patterns |
+| `get_proactive_insights` | `insights.py` | Auto-generated alerts across all dimensions |
+| `whatif_price_change` | `whatif.py` | Price elasticity simulation |
+| `whatif_availability_improvement` | `whatif.py` | Revenue uplift from fixing OOS |
+| `whatif_demand_surge` | `whatif.py` | Stock stress test under demand increase |
 
-### Layer 4 — Data Layer
+### Layer 4 — Analysis Sparring & External Context
+
+| Component | Path | Description |
+|---|---|---|
+| What-If | `src/tools/whatif.py` | Price change (elasticity -1.5), availability uplift, demand surge scenarios |
+| Insights | `src/tools/insights.py` | Proactive alert engine combining all signals + external context |
+| External | `src/tools/external_context.py` | 19 holidays, 12 promo campaigns, seasonal demand factors (0.8–1.4×), store regions |
+
+### Layer 5 — Data Layer
 
 | Component | Path | Description |
 |---|---|---|
@@ -180,16 +260,16 @@ flowchart TD
 | Target Component | Status | Implementation |
 |---|---|---|
 | **Store manager interface** | ✅ Built | `src/static/` — HTML/CSS/JS with Skapa design, 3 tabs |
-| **LLM agent orchestrator** | ✅ Built | `src/llm/agent.py` — Claude tool-calling with 14 tools |
-| **Q&A engine** | ✅ Built | `/api/chat` — conversational Q&A with store context |
-| **Analysis sparring** | ⚠️ Partial | Tool-calling supports multi-step analysis; no what-if scenarios yet |
-| **Proactive insights** | ⚠️ Partial | `daily-priorities` endpoint generates alerts; not auto-surfaced yet |
-| **Conversation memory** | ⚠️ Partial | In-memory session history; no persistent preferences |
-| **Analytics tools** | ✅ Built | `src/tools/` — sales, stock, margin, actions modules |
-| **Alert scheduler** | ❌ Roadmap | No background scheduler; alerts are on-demand only |
+| **LLM agent orchestrator** | ✅ Built | `src/llm/agent.py` — Claude tool-calling with 20 tools, critic-refine loop |
+| **Q&A engine** | ✅ Built | `/api/chat` — conversational Q&A with store context and memory |
+| **Analysis sparring** | ✅ Built | `src/tools/whatif.py` — price, availability, demand surge simulations (via chat) |
+| **Proactive insights** | ✅ Built | `src/tools/insights.py` — auto-surfaced on load via insights banner |
+| **Conversation memory** | ✅ Built | `src/llm/memory.py` — session history + persistent JSON preferences |
+| **Analytics tools** | ✅ Built | `src/tools/` — sales, stock, margin, actions (17 analysis functions) |
+| **Alert scheduler** | ✅ Built | `src/llm/scheduler.py` — background 30-min refresh, pre-warmed cache |
 | **Forecast data store** | ✅ Built | CSV-based with demand, accuracy via forecast vs actual |
 | **Vector knowledge base** | ❌ Roadmap | No embeddings or document retrieval |
-| **External context** | ❌ Roadmap | No holidays, promotions, or weather integration |
+| **External context** | ✅ Built | `src/tools/external_context.py` — holidays, promos, seasonal patterns |
 
 ---
 
@@ -218,7 +298,9 @@ Railway (Nixpacks)
 - **CSV over database** — data is small (< 1M rows total), pre-loaded at startup into pandas DataFrames for fast analysis.
 - **Tool-calling over RAG** — Claude decides which analysis to run based on the user's question, rather than retrieving from a vector store. More deterministic and auditable.
 - **Skapa design tokens only** — we use IKEA's CSS variables directly instead of the `@ingka` npm packages (which require internal registry access).
-- **Session-scoped chat** — conversation history resets on store change or page reload. No persistent storage needed for a demo.
+- **Session + persistent memory** — conversation history is session-scoped; user preferences persist in JSON across sessions.
+- **Pre-computed insights** — Alert scheduler generates insights at startup and refreshes every 30 minutes, so page loads are instant.
+- **Price elasticity heuristic** — what-if price simulations use a -1.5 elasticity factor (1% price increase → 1.5% volume decrease), a reasonable default for home furnishing.
 
 ---
 
@@ -226,9 +308,8 @@ Railway (Nixpacks)
 
 | Priority | Feature | Description |
 |---|---|---|
-| 🔴 High | **Proactive alerts** | Auto-surface critical insights on page load (OOS top sellers, forecast misses) |
-| 🔴 High | **What-if analysis** | "What if we reprice KALLAX by 10%?" — margin/volume simulation tool |
-| 🟡 Medium | **Alert scheduler** | Background job that generates morning briefings before store opens |
-| 🟡 Medium | **Persistent memory** | Remember manager preferences, past conversations, store-specific context |
-| 🟢 Low | **Vector knowledge base** | Embed SOPs, playbooks, corporate guidelines for retrieval |
-| 🟢 Low | **External context** | Holiday calendar, promotion schedule, weather data for demand context |
+| 🔴 High | **Vector knowledge base** | Embed SOPs, playbooks, corporate guidelines for RAG-based retrieval |
+| 🟡 Medium | **Real external APIs** | Replace static calendars with live holiday/promo/weather API integrations |
+| 🟡 Medium | **User authentication** | Store-level login to enable personalised preferences and audit trails |
+| 🟢 Low | **Multi-language support** | Localise UI and LLM responses per store region |
+| 🟢 Low | **Chart visualisations** | Add Chart.js or similar for trend visualisation in reports and explorer |

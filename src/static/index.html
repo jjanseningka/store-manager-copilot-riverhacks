@@ -14,7 +14,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ikea_logo.svg/200px-Ikea_logo.svg.png" alt="IKEA" class="logo">
+            <img src="/static/ikea-logo.png" alt="IKEA" class="logo">
             <h2>Hej Assistant</h2>
             <p class="subtitle">Your commercial intelligence co-worker</p>
         </div>
@@ -43,7 +43,6 @@
         <nav class="tabs">
             <button class="tab active" data-tab="briefing">📋 Daily Briefing</button>
             <button class="tab" data-tab="chat">💬 Ask Me Anything</button>
-            <button class="tab" data-tab="whatif">🔮 What-If Analysis</button>
             <button class="tab" data-tab="data">📊 Data Explorer</button>
         </nav>
 
@@ -83,7 +82,32 @@
             <!-- Report area -->
             <div class="report-area" id="report-area">
                 <div class="empty-state">
-                    <span class="empty-icon">📋</span>
+                    <!-- IKEA Man illustration – bold outline style -->
+                    <svg class="ikea-man" viewBox="0 0 140 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="IKEA co-worker waving">
+                        <!-- Head -->
+                        <circle cx="70" cy="30" r="20" fill="none" stroke="#111" stroke-width="4"/>
+                        <!-- Body -->
+                        <path d="M70 50 L70 110" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Left arm (down) -->
+                        <path d="M70 65 L42 95" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Right arm (waving up) -->
+                        <path d="M70 65 L100 45 L110 25" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Right hand (open, waving) -->
+                        <path d="M110 25 L115 18" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M110 25 L118 22" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M110 25 L117 28" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Left hand -->
+                        <path d="M42 95 L38 100" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M42 95 L35 97" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Left leg -->
+                        <path d="M70 110 L50 155" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Right leg -->
+                        <path d="M70 110 L90 155" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Left foot -->
+                        <path d="M50 155 L40 158" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Right foot -->
+                        <path d="M90 155 L100 158" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
                     <h3>Ready to generate your briefing</h3>
                     <p>Click <strong>Generate Report</strong> to create your daily commercial briefing with AI-powered insights.</p>
                 </div>
@@ -127,57 +151,6 @@
                     <input type="text" id="chat-input" placeholder="Ask me anything about your store..." 
                            onkeydown="if(event.key==='Enter')sendChat()">
                     <button class="btn btn-primary" onclick="sendChat()">Send</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tab: What-If Analysis -->
-        <section class="tab-content" id="tab-whatif">
-            <div class="tab-header">
-                <h1>What-If Analysis</h1>
-                <p class="store-label">Explore scenarios and simulate outcomes</p>
-            </div>
-
-            <!-- External Context -->
-            <div class="context-panel" id="context-panel">
-                <h3>📅 External Context</h3>
-                <div class="context-grid" id="context-grid">Loading...</div>
-            </div>
-
-            <!-- What-If Scenarios -->
-            <div class="whatif-scenarios">
-                <div class="whatif-card">
-                    <h3>💰 Price Change Simulation</h3>
-                    <p>What happens if you change the price of an article?</p>
-                    <div class="whatif-inputs">
-                        <label>Article (item_no)
-                            <input type="number" id="whatif-item-no" placeholder="e.g., 1001">
-                        </label>
-                        <label>Price change %
-                            <input type="number" id="whatif-price-pct" placeholder="e.g., -10 or +15" step="1">
-                        </label>
-                        <button class="btn btn-primary" onclick="runPriceWhatIf()">Simulate</button>
-                    </div>
-                    <div class="whatif-result" id="whatif-price-result"></div>
-                </div>
-
-                <div class="whatif-card">
-                    <h3>📦 Availability Uplift</h3>
-                    <p>How much revenue are we losing from out-of-stock items?</p>
-                    <button class="btn btn-primary" onclick="runAvailabilityWhatIf()">Calculate Uplift</button>
-                    <div class="whatif-result" id="whatif-availability-result"></div>
-                </div>
-
-                <div class="whatif-card">
-                    <h3>📈 Demand Surge Stress Test</h3>
-                    <p>What if demand increases? Which items would run out?</p>
-                    <div class="whatif-inputs">
-                        <label>Demand increase %
-                            <input type="number" id="whatif-demand-pct" placeholder="e.g., 30" step="5">
-                        </label>
-                        <button class="btn btn-primary" onclick="runDemandWhatIf()">Stress Test</button>
-                    </div>
-                    <div class="whatif-result" id="whatif-demand-result"></div>
                 </div>
             </div>
         </section>

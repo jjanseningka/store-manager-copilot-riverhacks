@@ -43,13 +43,15 @@ def whatif_price_change(
     volume_change_pct = price_change_pct * elasticity
     new_qty = max(0, current_qty * (1 + volume_change_pct / 100))
 
-    # New revenue: price per unit changes, volume changes
-    avg_price_net = current_net / current_qty if current_qty else 0
+    # New revenue: only the selling price (gross) changes. Cost (net) stays the same.
+    # In retail: net = cost to IKEA, gross = selling price to customer
+    # Margin = gross - net = what IKEA keeps
+    avg_cost_net = current_net / current_qty if current_qty else 0
     avg_price_gross = current_gross / current_qty if current_qty else 0
-    new_price_net = avg_price_net * (1 + price_change_pct / 100)
     new_price_gross = avg_price_gross * (1 + price_change_pct / 100)
 
-    new_net = new_qty * new_price_net
+    # Cost per unit doesn't change with price — only volume changes
+    new_net = new_qty * avg_cost_net
     new_gross = new_qty * new_price_gross
     new_margin = new_gross - new_net
 
@@ -82,9 +84,7 @@ def whatif_price_change(
     }
 
 
-def whatif_availability_improvement(
-    store: DataStore, bu_sk: int
-) -> dict[str, Any]:
+def whatif_availability_improvement(store: DataStore, bu_sk: int) -> dict[str, Any]:
     """Estimate revenue uplift if all OOS items were brought back in stock.
 
     Uses average daily sales rate of each OOS item to project gains.
@@ -116,15 +116,19 @@ def whatif_availability_improvement(
             continue
 
         total_net = float(item_sales["created_sales_net_amount_euro"].sum())
-        date_range = (item_sales["transaction_date"].max() - item_sales["transaction_date"].min()).days
+        date_range = (
+            item_sales["transaction_date"].max() - item_sales["transaction_date"].min()
+        ).days
         daily_rate = total_net / max(date_range, 1)
 
         total_daily_uplift += daily_rate
-        items_detail.append({
-            "article": f"{item.get('series', '')} {item.get('description', '')}",
-            "item_no": item_no,
-            "est_daily_revenue_euro": round(daily_rate, 2),
-        })
+        items_detail.append(
+            {
+                "article": f"{item.get('series', '')} {item.get('description', '')}",
+                "item_no": item_no,
+                "est_daily_revenue_euro": round(daily_rate, 2),
+            }
+        )
 
     items_detail.sort(key=lambda x: x["est_daily_revenue_euro"], reverse=True)
 
@@ -171,15 +175,17 @@ def whatif_demand_surge(
         days_cover_surge = stock / row["surge_daily_rate"] if row["surge_daily_rate"] > 0 else 999
 
         if days_cover_surge < 7:
-            at_risk.append({
-                "article": f"{row['series']} {row['description']}",
-                "item_no": int(row["item_no"]),
-                "current_stock": int(stock),
-                "normal_daily_rate": round(row["daily_rate"], 1),
-                "surge_daily_rate": round(row["surge_daily_rate"], 1),
-                "days_cover_normal": round(days_cover_normal, 1),
-                "days_cover_surge": round(days_cover_surge, 1),
-            })
+            at_risk.append(
+                {
+                    "article": f"{row['series']} {row['description']}",
+                    "item_no": int(row["item_no"]),
+                    "current_stock": int(stock),
+                    "normal_daily_rate": round(row["daily_rate"], 1),
+                    "surge_daily_rate": round(row["surge_daily_rate"], 1),
+                    "days_cover_normal": round(days_cover_normal, 1),
+                    "days_cover_surge": round(days_cover_surge, 1),
+                }
+            )
 
     at_risk.sort(key=lambda x: x["days_cover_surge"])
 

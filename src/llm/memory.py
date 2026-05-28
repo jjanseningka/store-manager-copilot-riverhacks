@@ -8,11 +8,9 @@ Stores:
 from __future__ import annotations
 
 import json
-import os
+from datetime import datetime
 from pathlib import Path
 from typing import Any
-from datetime import datetime
-
 
 MEMORY_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "memory"
 
@@ -34,11 +32,13 @@ class ConversationMemory:
         """Record a message in session history."""
         if session_id not in self._sessions:
             self._sessions[session_id] = []
-        self._sessions[session_id].append({
-            "role": role,
-            "content": content,
-            "timestamp": datetime.now().isoformat(),
-        })
+        self._sessions[session_id].append(
+            {
+                "role": role,
+                "content": content,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
     def get_session_history(self, session_id: str) -> list[dict[str, Any]]:
         """Get full conversation history for a session."""
@@ -70,7 +70,7 @@ class ConversationMemory:
         if path.exists():
             try:
                 self._preferences = json.loads(path.read_text())
-            except (json.JSONDecodeError, IOError):
+            except (OSError, json.JSONDecodeError):
                 self._preferences = {}
 
     def _save_preferences(self) -> None:
@@ -112,11 +112,7 @@ class ConversationMemory:
         # Recent session topics (last 5 messages)
         history = self.get_session_history(session_id)
         if len(history) > 2:
-            recent_questions = [
-                m["content"][:100]
-                for m in history[-10:]
-                if m["role"] == "user"
-            ]
+            recent_questions = [m["content"][:100] for m in history[-10:] if m["role"] == "user"]
             if recent_questions:
                 parts.append("\n## Recent Questions This Session")
                 for q in recent_questions[-5:]:

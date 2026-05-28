@@ -7,13 +7,12 @@ from typing import Any
 import anthropic
 
 from data.loader import DataStore
-from llm.prompts import REPORT_PROMPT, SYSTEM_PROMPT, TOOL_DEFINITIONS
-from llm.evaluators import critique_report, evaluate_report, evaluate_chat_response
+from llm.evaluators import critique_report, evaluate_chat_response, evaluate_report
 from llm.memory import get_memory
+from llm.prompts import REPORT_PROMPT, SYSTEM_PROMPT, TOOL_DEFINITIONS
 from tools.actions import generate_daily_priorities
 from tools.external_context import get_store_context
 from tools.insights import generate_proactive_insights
-from tools.whatif import whatif_price_change, whatif_availability_improvement, whatif_demand_surge
 from tools.margin import (
     get_hfb_margin_analysis,
     get_low_margin_alerts,
@@ -33,6 +32,7 @@ from tools.stock import (
     get_overstock_articles,
     get_stock_alerts,
 )
+from tools.whatif import whatif_availability_improvement, whatif_demand_surge, whatif_price_change
 
 MODEL = "claude-sonnet-4-6"
 MAX_TOKENS = 4096
@@ -118,9 +118,7 @@ class RetailAgent:
         )
         # Inject memory context if available
         if self.session_id:
-            mem_ctx = self.memory.get_context_for_llm(
-                self.session_id, f"store_{self.bu_sk}"
-            )
+            mem_ctx = self.memory.get_context_for_llm(self.session_id, f"store_{self.bu_sk}")
             if mem_ctx:
                 base += f"\n{mem_ctx}\n"
         return base

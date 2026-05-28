@@ -25,7 +25,6 @@ from llm.scheduler import AlertScheduler
 from llm.validators import validate_article_references, validate_numbers_reasonable
 from tools.actions import generate_daily_priorities
 from tools.external_context import get_store_context
-from tools.insights import generate_proactive_insights
 from tools.margin import (
     get_margin_analysis,
 )
@@ -36,7 +35,7 @@ from tools.sales import (
     get_top_articles,
 )
 from tools.stock import get_availability_risks, get_stock_alerts
-from tools.whatif import whatif_price_change, whatif_availability_improvement, whatif_demand_surge
+from tools.whatif import whatif_availability_improvement, whatif_demand_surge, whatif_price_change
 
 # ---------------------------------------------------------------------------
 # Data loading (singleton)
@@ -186,6 +185,7 @@ def api_declining_articles(bu_sk: int):
 # ---------------------------------------------------------------------------
 # New: Proactive insights, external context, what-if
 # ---------------------------------------------------------------------------
+
 
 @app.get("/api/insights/{bu_sk}")
 def api_insights(bu_sk: int):

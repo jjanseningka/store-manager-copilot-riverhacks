@@ -127,10 +127,10 @@ def judge_response(
 {response}
 
 ## Ground Truth Facts
-{chr(10).join(f'- {f}' for f in ground_truth_facts)}
+{chr(10).join(f"- {f}" for f in ground_truth_facts)}
 
 ## Critical Facts (must be present for correct answer)
-{chr(10).join(f'- {f}' for f in critical_facts)}
+{chr(10).join(f"- {f}" for f in critical_facts)}
 
 ## Question Answerable from Data: {"Yes" if answerable else "No — the data does NOT contain the information needed to fully answer this question"}
 
@@ -213,27 +213,31 @@ def run_evaluation(bu_sk: int = 1, subset: list[str] | None = None):
             item["critical_facts"],
             item["answerable"],
         )
-        print(f"  📊 Scores: T={scores.get('truthfulness', '?')} "
-              f"C={scores.get('completeness', '?')} "
-              f"R={scores.get('relevance', '?')} "
-              f"A={scores.get('actionability', '?')} "
-              f"D={scores.get('data_grounding', '?')} "
-              f"O={scores.get('overall', '?')}")
+        print(
+            f"  📊 Scores: T={scores.get('truthfulness', '?')} "
+            f"C={scores.get('completeness', '?')} "
+            f"R={scores.get('relevance', '?')} "
+            f"A={scores.get('actionability', '?')} "
+            f"D={scores.get('data_grounding', '?')} "
+            f"O={scores.get('overall', '?')}"
+        )
 
         if scores.get("errors_found"):
             for err in scores["errors_found"]:
                 print(f"  ❗ {err}")
 
-        results.append({
-            "id": qid,
-            "question": question,
-            "category": item["category"],
-            "answerable": item["answerable"],
-            "response": response,
-            "latency_s": round(latency, 1),
-            "response_length": len(response),
-            **scores,
-        })
+        results.append(
+            {
+                "id": qid,
+                "question": question,
+                "category": item["category"],
+                "answerable": item["answerable"],
+                "response": response,
+                "latency_s": round(latency, 1),
+                "response_length": len(response),
+                **scores,
+            }
+        )
 
     # Save results
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -256,7 +260,14 @@ def generate_report(results: list[dict], timestamp: str):
     print("=" * 70)
 
     df = pd.DataFrame(results)
-    metrics = ["truthfulness", "completeness", "relevance", "actionability", "data_grounding", "overall"]
+    metrics = [
+        "truthfulness",
+        "completeness",
+        "relevance",
+        "actionability",
+        "data_grounding",
+        "overall",
+    ]
 
     # Overall averages
     print("\n📊 OVERALL SCORES (1-5 scale)")
@@ -275,7 +286,9 @@ def generate_report(results: list[dict], timestamp: str):
         if len(lh_vals) > 0:
             avg = lh_vals.mean()
             bar = "█" * int(avg) + "░" * (5 - int(avg))
-            print(f"  {'limitation_honesty':20s} {bar} {avg:.2f} (n={len(lh_vals)} unanswerable Qs)")
+            print(
+                f"  {'limitation_honesty':20s} {bar} {avg:.2f} (n={len(lh_vals)} unanswerable Qs)"
+            )
 
     # By category
     print("\n📂 SCORES BY CATEGORY")
@@ -287,7 +300,7 @@ def generate_report(results: list[dict], timestamp: str):
             print(f"  {cat:20s} overall={overall_vals.mean():.2f}  (n={len(cat_df)})")
 
     # Latency stats
-    print(f"\n⏱️  LATENCY")
+    print("\n⏱️  LATENCY")
     print("─" * 40)
     print(f"  Mean:   {df['latency_s'].mean():.1f}s")
     print(f"  Median: {df['latency_s'].median():.1f}s")
@@ -303,7 +316,7 @@ def generate_report(results: list[dict], timestamp: str):
             print(f"  {row['id']}: {row['question'][:60]}...")
             print(f"    → {row.get('explanation', 'No explanation')}")
     else:
-        print(f"\n🟢 No failed questions (all scored > 2)")
+        print("\n🟢 No failed questions (all scored > 2)")
 
     # Errors found
     all_errors = []
@@ -333,10 +346,12 @@ def generate_report(results: list[dict], timestamp: str):
     lines.append(f"Pass rate: {pass_rate:.0f}%")
     lines.append("")
     for _, row in df.iterrows():
-        lines.append(f"{row['id']} | {row['category']} | overall={row.get('overall', '?')} | "
-                     f"T={row.get('truthfulness', '?')} C={row.get('completeness', '?')} "
-                     f"R={row.get('relevance', '?')} A={row.get('actionability', '?')} "
-                     f"D={row.get('data_grounding', '?')} | {row['latency_s']}s")
+        lines.append(
+            f"{row['id']} | {row['category']} | overall={row.get('overall', '?')} | "
+            f"T={row.get('truthfulness', '?')} C={row.get('completeness', '?')} "
+            f"R={row.get('relevance', '?')} A={row.get('actionability', '?')} "
+            f"D={row.get('data_grounding', '?')} | {row['latency_s']}s"
+        )
         lines.append(f"  Q: {row['question'][:80]}")
         lines.append(f"  → {row.get('explanation', '')}")
         lines.append("")
@@ -350,7 +365,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Run Hej Assistant evaluations")
     parser.add_argument("--store", type=int, default=1, help="Store bu_sk (default: 1 = Berlin)")
-    parser.add_argument("--questions", nargs="*", help="Specific question IDs to run (e.g. Q01 Q05)")
+    parser.add_argument(
+        "--questions", nargs="*", help="Specific question IDs to run (e.g. Q01 Q05)"
+    )
     parser.add_argument("--quick", action="store_true", help="Run only 5 representative questions")
     args = parser.parse_args()
 
