@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import hashlib
 import hmac
 import secrets
 
