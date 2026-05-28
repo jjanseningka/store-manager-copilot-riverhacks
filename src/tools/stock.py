@@ -13,7 +13,9 @@ def get_stock_alerts(store: DataStore, bu_sk: int) -> dict[str, Any]:
     # Out of stock: available_stock <= 0
     oos = latest[latest["available_stock"] <= 0]
     # Low stock: available_stock > 0 but below demand_stock
-    low = latest[(latest["available_stock"] > 0) & (latest["available_stock"] < latest["demand_stock"])]
+    low = latest[
+        (latest["available_stock"] > 0) & (latest["available_stock"] < latest["demand_stock"])
+    ]
     # Healthy
     healthy = latest[latest["available_stock"] >= latest["demand_stock"]]
 
@@ -56,15 +58,17 @@ def get_availability_risks(store: DataStore, bu_sk: int) -> dict[str, Any]:
             days_until_oos = last_stock / daily_burn
             if days_until_oos <= 7:  # At risk within a week
                 row = group.iloc[-1]
-                risks.append({
-                    "item_sk": int(item_sk),
-                    "series": row.get("series", ""),
-                    "description": row.get("description", ""),
-                    "current_stock": int(last_stock),
-                    "daily_burn_rate": round(float(daily_burn), 1),
-                    "days_until_oos": round(float(days_until_oos), 1),
-                    "severity": "critical" if days_until_oos <= 2 else "warning",
-                })
+                risks.append(
+                    {
+                        "item_sk": int(item_sk),
+                        "series": row.get("series", ""),
+                        "description": row.get("description", ""),
+                        "current_stock": int(last_stock),
+                        "daily_burn_rate": round(float(daily_burn), 1),
+                        "days_until_oos": round(float(days_until_oos), 1),
+                        "severity": "critical" if days_until_oos <= 2 else "warning",
+                    }
+                )
 
     risks.sort(key=lambda x: x["days_until_oos"])
     return {"risks": risks[:15]}
@@ -78,7 +82,10 @@ def get_oos_top_sellers(store: DataStore, bu_sk: int) -> dict[str, Any]:
 
     top_sellers = (
         recent_sales.groupby(["item_no", "series", "description"])
-        .agg(total_qty=("created_net_quantity", "sum"), total_net=("created_sales_net_amount_euro", "sum"))
+        .agg(
+            total_qty=("created_net_quantity", "sum"),
+            total_net=("created_sales_net_amount_euro", "sum"),
+        )
         .reset_index()
         .nlargest(30, "total_net")
     )
@@ -113,7 +120,14 @@ def get_overstock_articles(store: DataStore, bu_sk: int) -> dict[str, Any]:
         return {"overstocked": [], "count": 0}
 
     overstocked = overstocked.sort_values("avoidable_stock", ascending=False)
-    cols = ["item_sk", "series", "description", "available_stock", "acceptable_stock", "avoidable_stock"]
+    cols = [
+        "item_sk",
+        "series",
+        "description",
+        "available_stock",
+        "acceptable_stock",
+        "avoidable_stock",
+    ]
     available_cols = [c for c in cols if c in overstocked.columns]
 
     return {

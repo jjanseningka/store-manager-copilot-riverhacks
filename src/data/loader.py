@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import pandas as pd
-
 
 DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 
 
 def _parse_mixed_dates(series: pd.Series) -> pd.Series:
     """Parse dates that may be datetime strings or Excel serial numbers."""
+
     def _convert(val):
         if pd.isna(val):
             return pd.NaT
@@ -106,9 +105,7 @@ class DataStore:
 
     def store_names(self) -> list[dict]:
         """Return list of {bu_sk, name, city} for store selector."""
-        return self.business_units[["bu_sk", "bu_name", "bu_short_name", "city"]].to_dict(
-            "records"
-        )
+        return self.business_units[["bu_sk", "bu_name", "bu_short_name", "city"]].to_dict("records")
 
     def latest_stock(self, bu_sk: int) -> pd.DataFrame:
         """Get the most recent stock snapshot for a store."""

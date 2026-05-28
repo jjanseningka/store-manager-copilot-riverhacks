@@ -7,28 +7,27 @@ from typing import Any
 import anthropic
 
 from data.loader import DataStore
-from llm.prompts import SYSTEM_PROMPT, REPORT_PROMPT, TOOL_DEFINITIONS
+from llm.prompts import REPORT_PROMPT, SYSTEM_PROMPT, TOOL_DEFINITIONS
+from tools.actions import generate_daily_priorities
+from tools.margin import (
+    get_hfb_margin_analysis,
+    get_low_margin_alerts,
+    get_margin_analysis,
+    get_top_profitable_articles,
+)
 from tools.sales import (
+    get_declining_articles,
+    get_hfb_performance,
     get_sales_summary,
     get_sales_vs_forecast,
     get_top_articles,
-    get_hfb_performance,
-    get_declining_articles,
 )
 from tools.stock import (
-    get_stock_alerts,
     get_availability_risks,
     get_oos_top_sellers,
     get_overstock_articles,
+    get_stock_alerts,
 )
-from tools.margin import (
-    get_margin_analysis,
-    get_top_profitable_articles,
-    get_low_margin_alerts,
-    get_hfb_margin_analysis,
-)
-from tools.actions import generate_daily_priorities
-
 
 MODEL = "claude-sonnet-4-6"
 MAX_TOKENS = 4096
@@ -39,15 +38,11 @@ def _execute_tool(tool_name: str, tool_input: dict, store: DataStore, bu_sk: int
     """Dispatch a tool call to the appropriate analysis function."""
     dispatch: dict[str, Any] = {
         "get_sales_summary": lambda _: get_sales_summary(store, bu_sk),
-        "get_sales_vs_forecast": lambda args: get_sales_vs_forecast(
-            store, bu_sk, args["period"]
-        ),
+        "get_sales_vs_forecast": lambda args: get_sales_vs_forecast(store, bu_sk, args["period"]),
         "get_top_articles": lambda args: get_top_articles(
             store, bu_sk, args["period"], args.get("n", 10), args.get("metric", "sales")
         ),
-        "get_hfb_performance": lambda args: get_hfb_performance(
-            store, bu_sk, args["period"]
-        ),
+        "get_hfb_performance": lambda args: get_hfb_performance(store, bu_sk, args["period"]),
         "get_declining_articles": lambda args: get_declining_articles(
             store, bu_sk, args.get("n", 10)
         ),
@@ -55,9 +50,7 @@ def _execute_tool(tool_name: str, tool_input: dict, store: DataStore, bu_sk: int
         "get_availability_risks": lambda _: get_availability_risks(store, bu_sk),
         "get_oos_top_sellers": lambda _: get_oos_top_sellers(store, bu_sk),
         "get_overstock_articles": lambda _: get_overstock_articles(store, bu_sk),
-        "get_margin_analysis": lambda args: get_margin_analysis(
-            store, bu_sk, args["period"]
-        ),
+        "get_margin_analysis": lambda args: get_margin_analysis(store, bu_sk, args["period"]),
         "get_top_profitable_articles": lambda args: get_top_profitable_articles(
             store, bu_sk, args["period"], args.get("n", 10)
         ),
@@ -127,14 +120,14 @@ class RetailAgent:
 
                 for block in response.content:
                     if block.type == "tool_use":
-                        result = _execute_tool(
-                            block.name, block.input, self.store, self.bu_sk
+                        result = _execute_tool(block.name, block.input, self.store, self.bu_sk)
+                        tool_results.append(
+                            {
+                                "type": "tool_result",
+                                "tool_use_id": block.id,
+                                "content": json.dumps(result, default=str),
+                            }
                         )
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": json.dumps(result, default=str),
-                        })
 
                 # Add assistant message and tool results to conversation
                 messages.append({"role": "assistant", "content": assistant_content})

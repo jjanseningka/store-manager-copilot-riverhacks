@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import sys
-import uuid
 from pathlib import Path
 
 # Add src to path
@@ -21,21 +20,17 @@ from pydantic import BaseModel
 from data.loader import DataStore
 from llm.agent import RetailAgent
 from llm.validators import validate_article_references, validate_numbers_reasonable
-from tools.sales import (
-    get_sales_summary,
-    get_sales_vs_forecast,
-    get_top_articles,
-    get_hfb_performance,
-    get_declining_articles,
-)
-from tools.stock import get_stock_alerts, get_availability_risks, get_oos_top_sellers
+from tools.actions import generate_daily_priorities
 from tools.margin import (
     get_margin_analysis,
-    get_top_profitable_articles,
-    get_low_margin_alerts,
-    get_hfb_margin_analysis,
 )
-from tools.actions import generate_daily_priorities
+from tools.sales import (
+    get_declining_articles,
+    get_hfb_performance,
+    get_sales_vs_forecast,
+    get_top_articles,
+)
+from tools.stock import get_availability_risks, get_stock_alerts
 
 # ---------------------------------------------------------------------------
 # App setup

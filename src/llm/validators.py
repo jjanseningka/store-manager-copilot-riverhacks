@@ -16,12 +16,52 @@ def validate_article_references(response: str, store: DataStore) -> list[str]:
 
     # Filter to words that look like series names (exclude common words)
     common_words = {
-        "THE", "AND", "FOR", "ARE", "NOT", "BUT", "HAS", "HAD", "WAS", "HFB",
-        "OOS", "OSA", "YTD", "KEY", "TOP", "ALL", "LOW", "HIGH", "NET", "GOOD",
-        "ACTION", "SALES", "STOCK", "MARGIN", "TOTAL", "STORE", "WEEK", "DAYS",
-        "TODAY", "ITEMS", "UNITS", "EURO", "CRITICAL", "WARNING", "STATUS",
-        "PRIORITY", "FOCUS", "TEAM", "COACH", "BRIEF", "HUDDLE", "MORNING",
-        "PRODUCT", "ARTICLE", "AVAILABLE", "DEMAND",
+        "THE",
+        "AND",
+        "FOR",
+        "ARE",
+        "NOT",
+        "BUT",
+        "HAS",
+        "HAD",
+        "WAS",
+        "HFB",
+        "OOS",
+        "OSA",
+        "YTD",
+        "KEY",
+        "TOP",
+        "ALL",
+        "LOW",
+        "HIGH",
+        "NET",
+        "GOOD",
+        "ACTION",
+        "SALES",
+        "STOCK",
+        "MARGIN",
+        "TOTAL",
+        "STORE",
+        "WEEK",
+        "DAYS",
+        "TODAY",
+        "ITEMS",
+        "UNITS",
+        "EURO",
+        "CRITICAL",
+        "WARNING",
+        "STATUS",
+        "PRIORITY",
+        "FOCUS",
+        "TEAM",
+        "COACH",
+        "BRIEF",
+        "HUDDLE",
+        "MORNING",
+        "PRODUCT",
+        "ARTICLE",
+        "AVAILABLE",
+        "DEMAND",
     }
     potential_refs -= common_words
 
@@ -45,9 +85,7 @@ def validate_numbers_reasonable(response: str) -> list[str]:
         try:
             amount = float(amount_str.replace(",", ""))
             if amount > 10_000_000:
-                warnings.append(
-                    f"⚠️ Unusually large amount €{amount_str} — verify this is correct."
-                )
+                warnings.append(f"⚠️ Unusually large amount €{amount_str} — verify this is correct.")
         except ValueError:
             pass
 

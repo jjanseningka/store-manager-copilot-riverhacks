@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import pandas as pd
-
 from data.loader import DataStore
 from data.periods import filter_period, previous_period
 
@@ -112,9 +110,9 @@ def get_hfb_performance(store: DataStore, bu_sk: int, period: str) -> dict[str, 
         grouped["growth_pct"] = (
             (grouped["total_net"] - grouped["prev_net"]) / grouped["prev_net"] * 100
         ).round(1)
-        grouped["growth_pct"] = grouped["growth_pct"].replace(
-            [float("inf"), float("-inf")], 0
-        ).fillna(0)
+        grouped["growth_pct"] = (
+            grouped["growth_pct"].replace([float("inf"), float("-inf")], 0).fillna(0)
+        )
 
     return {
         "period": period,
@@ -141,15 +139,11 @@ def get_declining_articles(store: DataStore, bu_sk: int, n: int = 10) -> dict[st
         .reset_index()
     )
 
-    merged = recent_g.merge(prior_g, on=["item_no", "series", "description"], how="outer").fillna(
-        0
-    )
+    merged = recent_g.merge(prior_g, on=["item_no", "series", "description"], how="outer").fillna(0)
     merged["change_pct"] = (
         (merged["recent_net"] - merged["prior_net"]) / merged["prior_net"] * 100
     ).round(1)
-    merged["change_pct"] = merged["change_pct"].replace(
-        [float("inf"), float("-inf")], 0
-    ).fillna(0)
+    merged["change_pct"] = merged["change_pct"].replace([float("inf"), float("-inf")], 0).fillna(0)
 
     declining = merged[merged["change_pct"] < 0].nsmallest(n, "change_pct")
 
