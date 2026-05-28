@@ -108,6 +108,20 @@ function updateUserDisplay() {
     if (subtitle) subtitle.textContent = `Hej, ${currentUser.display_name.split(' ')[0]}!`;
 }
 
+function handleLogout() {
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('current_user');
+    currentUser = null;
+    document.getElementById('login-overlay').classList.remove('hidden');
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-username').value = '';
+    document.getElementById('login-btn').disabled = true;
+    document.getElementById('login-error').style.display = 'none';
+    document.querySelectorAll('.user-option').forEach(o => o.classList.remove('selected'));
+    const subtitle = document.querySelector('.sidebar .subtitle');
+    if (subtitle) subtitle.textContent = 'Your commercial intelligence co-worker';
+}
+
 // ---- Initialization ----
 document.addEventListener('DOMContentLoaded', () => {
     // Check if already authenticated

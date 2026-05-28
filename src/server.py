@@ -125,6 +125,12 @@ USERS = [
         "role": "Operations Manager",
         "initials": "EL",
     },
+    {
+        "username": "kshitij",
+        "display_name": "Kshitij Parashar",
+        "role": "DCSA",
+        "initials": "KP",
+    },
 ]
 
 
