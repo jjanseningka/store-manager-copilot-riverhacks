@@ -174,7 +174,7 @@ async function loadSnapshot() {
 }
 
 // ---- Report generation ----
-async function generateReport() {
+async function generateReport(forceRefresh = false) {
     const area = document.getElementById('report-area');
     const btn = document.getElementById('btn-generate');
     const pdfBtn = document.getElementById('btn-pdf');
@@ -182,14 +182,16 @@ async function generateReport() {
 
     btn.disabled = true;
     btn.textContent = '⏳ Generating...';
-    area.innerHTML = '<div class="loading"><div class="spinner"></div><p class="loading-text">Analysing your store data with AI... This may take 30-60 seconds.</p></div>';
+    if (forceRefresh || !area.querySelector('.report-content')) {
+        area.innerHTML = '<div class="loading"><div class="spinner"></div><p class="loading-text">Analysing your store data with AI... This may take 30-60 seconds.</p></div>';
+    }
     warnings.style.display = 'none';
 
     try {
         const res = await fetch(`${API}/api/report`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ bu_sk: selectedBu }),
+            body: JSON.stringify({ bu_sk: selectedBu, force_refresh: forceRefresh }),
         });
 
         if (!res.ok) {
@@ -198,7 +200,17 @@ async function generateReport() {
         }
 
         const data = await res.json();
-        area.innerHTML = marked.parse(data.report);
+
+        // Build report with timestamp header
+        let headerHtml = '';
+        if (data.generated_at) {
+            headerHtml = `<div class="report-meta">
+                <span class="report-timestamp">📅 Generated at ${data.generated_at}${data.cached ? ' (cached)' : ''}</span>
+                <button class="btn btn-small btn-regenerate" onclick="generateReport(true)">🔄 Regenerate</button>
+            </div>`;
+        }
+
+        area.innerHTML = headerHtml + '<div class="report-content">' + marked.parse(data.report) + '</div>';
         pdfBtn.style.display = 'inline-flex';
 
         if (data.warnings && data.warnings.length > 0) {

@@ -14,6 +14,7 @@ load_dotenv()
 
 import hmac
 import secrets
+from datetime import datetime
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -117,12 +118,15 @@ class ChatResponse(BaseModel):
 
 class ReportRequest(BaseModel):
     bu_sk: int
+    force_refresh: bool = False
 
 
 class ReportResponse(BaseModel):
     report: str
     warnings: list[str]
     evaluation: dict | None = None
+    generated_at: str | None = None
+    cached: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -259,9 +263,26 @@ def api_set_preference(bu_sk: int, key: str, value: str):
     return {"status": "ok"}
 
 
+# ---------------------------------------------------------------------------
+# Report cache — one report per store, shared across all users
+# ---------------------------------------------------------------------------
+_report_cache: dict[int, dict] = {}  # bu_sk -> {report, warnings, evaluation, generated_at}
+
+
 @app.post("/api/report", response_model=ReportResponse)
 def generate_report(req: ReportRequest):
-    """Generate daily commercial briefing using Claude."""
+    """Generate daily commercial briefing using Claude (cached per store)."""
+    # Return cached report if available and not forcing refresh
+    if not req.force_refresh and req.bu_sk in _report_cache:
+        cached = _report_cache[req.bu_sk]
+        return ReportResponse(
+            report=cached["report"],
+            warnings=cached["warnings"],
+            evaluation=cached["evaluation"],
+            generated_at=cached["generated_at"],
+            cached=True,
+        )
+
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
         raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY not configured")
@@ -270,7 +291,23 @@ def generate_report(req: ReportRequest):
         report, evaluation = agent.generate_report()
         warnings = validate_article_references(report, store)
         warnings += validate_numbers_reasonable(report)
-        return ReportResponse(report=report, warnings=warnings, evaluation=evaluation)
+        generated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        # Cache the result
+        _report_cache[req.bu_sk] = {
+            "report": report,
+            "warnings": warnings,
+            "evaluation": evaluation,
+            "generated_at": generated_at,
+        }
+
+        return ReportResponse(
+            report=report,
+            warnings=warnings,
+            evaluation=evaluation,
+            generated_at=generated_at,
+            cached=False,
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
