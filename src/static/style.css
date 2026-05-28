@@ -115,6 +115,7 @@ p { color: rgb(var(--colour-text-and-icon-2)); }
 .sidebar-header .logo {
     width: 120px;
     margin-bottom: var(--space-75);
+    border-radius: var(--radius-s);
 }
 
 .sidebar-header h2 {
