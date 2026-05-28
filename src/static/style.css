@@ -3,6 +3,55 @@
    Based on IKEA Skapa (https://skapa.ikea.net)
    ============================================================ */
 
+/* ---- Login Overlay ---- */
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0058A3;
+}
+.login-overlay.hidden { display: none; }
+.login-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    width: 340px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+.login-logo { width: 80px; margin-bottom: 1rem; }
+.login-card h2 { margin: 0 0 0.25rem; color: #111; font-size: 1.5rem; }
+.login-card p { margin: 0 0 1.25rem; color: #484848; font-size: 0.9rem; }
+.login-card input[type="password"] {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1.5px solid #dfdfdf;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    box-sizing: border-box;
+}
+.login-card input[type="password"]:focus {
+    outline: none;
+    border-color: #0058A3;
+}
+.login-card .btn-primary {
+    width: 100%;
+    padding: 0.65rem;
+    background: #0058A3;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.login-card .btn-primary:hover { background: #004a8a; }
+.login-error { color: #e00; font-size: 0.85rem; margin-top: 0.5rem; }
+
 /* ---- Skapa Design Tokens ---- */
 :root {
     /* Elevation / backgrounds */

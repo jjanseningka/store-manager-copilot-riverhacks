@@ -12,6 +12,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import hashlib
+import hmac
+import secrets
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
@@ -89,6 +93,17 @@ def _get_or_create_agent(session_id: str, bu_sk: int) -> RetailAgent:
 # ---------------------------------------------------------------------------
 # Request / Response models
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Site password (env var or default for hackathon demo)
+# ---------------------------------------------------------------------------
+SITE_PASSWORD = os.environ.get("SITE_PASSWORD", "HelloIngvar!")
+_auth_tokens: set[str] = set()
+
+
+class LoginRequest(BaseModel):
+    password: str
+
+
 class ChatRequest(BaseModel):
     session_id: str
     bu_sk: int
@@ -114,6 +129,15 @@ class ReportResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # API routes
 # ---------------------------------------------------------------------------
+@app.post("/api/login")
+def login(req: LoginRequest):
+    if hmac.compare_digest(req.password, SITE_PASSWORD):
+        token = secrets.token_hex(32)
+        _auth_tokens.add(token)
+        return {"ok": True, "token": token}
+    raise HTTPException(status_code=401, detail="Invalid password")
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok", "data_date": str(store.today.date())}

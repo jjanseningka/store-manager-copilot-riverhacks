@@ -6,8 +6,36 @@ const API = '';  // Same origin — works on Railway
 let selectedBu = 1;
 let sessionId = crypto.randomUUID();
 
+// ---- Login ----
+async function handleLogin(e) {
+    e.preventDefault();
+    const pw = document.getElementById('login-password').value;
+    const errEl = document.getElementById('login-error');
+    try {
+        const res = await fetch(`${API}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: pw }),
+        });
+        if (res.ok) {
+            const data = await res.json();
+            sessionStorage.setItem('auth_token', data.token);
+            document.getElementById('login-overlay').classList.add('hidden');
+        } else {
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent = 'Connection error';
+        errEl.style.display = 'block';
+    }
+}
+
 // ---- Initialization ----
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if already authenticated
+    if (sessionStorage.getItem('auth_token')) {
+        document.getElementById('login-overlay').classList.add('hidden');
+    }
     initTabs();
     loadStores();
 });
