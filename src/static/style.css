@@ -456,9 +456,10 @@ p { color: rgb(var(--colour-text-and-icon-2)); }
 }
 
 .empty-state .ikea-man {
-    width: 100px;
+    width: 260px;
     height: auto;
-    margin-bottom: var(--space-150);
+    margin-bottom: var(--space-200);
+    opacity: 0.6;
 }
 
 .empty-state h3 {
