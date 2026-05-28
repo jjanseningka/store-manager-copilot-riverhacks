@@ -52,6 +52,124 @@
 .login-card .btn-primary:hover { background: #004a8a; }
 .login-error { color: #e00; font-size: 0.85rem; margin-top: 0.5rem; }
 
+/* ---- User grid (login) ---- */
+.user-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    max-height: 260px;
+    overflow-y: auto;
+}
+.user-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border: 2px solid #dfdfdf;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    text-align: left;
+}
+.user-option:hover { border-color: #0058A3; background: #f0f7ff; }
+.user-option.selected { border-color: #0058A3; background: #e0efff; }
+.user-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: #0058A3;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+.user-info { flex: 1; }
+.user-name { font-weight: 600; font-size: 0.9rem; color: #111; }
+.user-role { font-size: 0.75rem; color: #767676; }
+
+/* ---- Create user ---- */
+.create-user-toggle {
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #767676;
+}
+.btn-link {
+    background: none;
+    border: none;
+    color: #0058A3;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    padding: 0;
+}
+.btn-link:hover { color: #004a8a; }
+.create-user-form {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #dfdfdf;
+}
+.create-user-form h3 {
+    font-size: 0.95rem;
+    margin: 0 0 0.5rem 0;
+    color: #111;
+}
+.create-user-form input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+.create-user-form .btn {
+    width: 100%;
+}
+
+/* ---- Alert actions ---- */
+.insight-actioned {
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.actioned-badge {
+    font-size: 0.8rem;
+    color: #0A6E5C;
+}
+.insight-item.actioned {
+    opacity: 0.7;
+    border-left: 3px solid #0A6E5C;
+}
+.btn-action {
+    margin-top: 0.4rem;
+    background: #0058A3;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+.btn-action:hover { background: #004a8a; }
+.btn-tiny {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+    background: transparent;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #666;
+}
+.btn-tiny:hover { background: #f5f5f5; }
+
 /* ---- Skapa Design Tokens ---- */
 :root {
     /* Elevation / backgrounds */

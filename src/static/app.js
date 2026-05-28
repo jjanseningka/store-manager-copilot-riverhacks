@@ -5,23 +5,95 @@
 const API = '';  // Same origin — works on Railway
 let selectedBu = 1;
 let sessionId = crypto.randomUUID();
+let currentUser = null;  // { username, display_name, role, initials }
 
 // ---- Login ----
+async function loadLoginUsers() {
+    try {
+        const res = await fetch(`${API}/api/users`);
+        const users = await res.json();
+        const grid = document.getElementById('user-grid');
+        grid.innerHTML = users.map(u => `
+            <div class="user-option" data-username="${u.username}" onclick="selectUser(this, '${u.username}')">
+                <div class="user-avatar">${u.initials}</div>
+                <div class="user-info">
+                    <div class="user-name">${u.display_name}</div>
+                    <div class="user-role">${u.role}</div>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error('Failed to load users:', e);
+    }
+}
+
+function selectUser(el, username) {
+    document.querySelectorAll('.user-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('login-username').value = username;
+    document.getElementById('login-btn').disabled = false;
+    document.getElementById('login-password').focus();
+}
+
+function toggleCreateUser() {
+    const form = document.getElementById('create-user-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function createUser() {
+    const name = document.getElementById('new-user-name').value.trim();
+    const role = document.getElementById('new-user-role').value.trim();
+    const errEl = document.getElementById('create-user-error');
+    errEl.style.display = 'none';
+    if (!name) { errEl.textContent = 'Name is required'; errEl.style.display = 'block'; return; }
+    try {
+        const res = await fetch(`${API}/api/users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ display_name: name, role: role || 'Team Member' }),
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            errEl.textContent = err.detail || 'Failed to create user';
+            errEl.style.display = 'block';
+            return;
+        }
+        const newUser = await res.json();
+        // Reload user list and auto-select the new user
+        document.getElementById('create-user-form').style.display = 'none';
+        document.getElementById('new-user-name').value = '';
+        document.getElementById('new-user-role').value = '';
+        await loadLoginUsers();
+        // Select the newly created user
+        const newOption = document.querySelector(`.user-option[data-username="${newUser.username}"]`);
+        if (newOption) selectUser(newOption, newUser.username);
+    } catch {
+        errEl.textContent = 'Connection error';
+        errEl.style.display = 'block';
+    }
+}
+
 async function handleLogin(e) {
     e.preventDefault();
+    const username = document.getElementById('login-username').value;
     const pw = document.getElementById('login-password').value;
     const errEl = document.getElementById('login-error');
+    if (!username) { errEl.textContent = 'Please select a user'; errEl.style.display = 'block'; return; }
     try {
         const res = await fetch(`${API}/api/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: pw }),
+            body: JSON.stringify({ username, password: pw }),
         });
         if (res.ok) {
             const data = await res.json();
+            currentUser = data.user;
             sessionStorage.setItem('auth_token', data.token);
+            sessionStorage.setItem('current_user', JSON.stringify(data.user));
             document.getElementById('login-overlay').classList.add('hidden');
+            updateUserDisplay();
         } else {
+            errEl.textContent = 'Incorrect password';
             errEl.style.display = 'block';
         }
     } catch {
@@ -30,12 +102,22 @@ async function handleLogin(e) {
     }
 }
 
+function updateUserDisplay() {
+    if (!currentUser) return;
+    const subtitle = document.querySelector('.sidebar .subtitle');
+    if (subtitle) subtitle.textContent = `Hej, ${currentUser.display_name.split(' ')[0]}!`;
+}
+
 // ---- Initialization ----
 document.addEventListener('DOMContentLoaded', () => {
     // Check if already authenticated
-    if (sessionStorage.getItem('auth_token')) {
+    const savedUser = sessionStorage.getItem('current_user');
+    if (sessionStorage.getItem('auth_token') && savedUser) {
+        currentUser = JSON.parse(savedUser);
         document.getElementById('login-overlay').classList.add('hidden');
+        updateUserDisplay();
     }
+    loadLoginUsers();
     initTabs();
     loadStores();
 });
@@ -528,6 +610,10 @@ async function loadInsights() {
             return;
         }
 
+        // Fetch existing actions for this store
+        const actionsRes = await fetch(`${API}/api/alerts/actions/${selectedBu}`);
+        const actions = await actionsRes.json();
+
         banner.style.display = 'block';
         const critCount = data.critical_count || 0;
         const warnCount = data.warning_count || 0;
@@ -535,19 +621,51 @@ async function loadInsights() {
             `${critCount} critical · ${warnCount} warning`;
 
         const list = document.getElementById('insights-list');
-        list.innerHTML = insights.map(i => `
-            <div class="insight-item severity-${i.severity}">
+        list.innerHTML = insights.map((i, idx) => {
+            const action = actions[String(idx)];
+            const actionedHtml = action
+                ? `<div class="insight-actioned">
+                       <span class="actioned-badge">✅ Action taken by <strong>${escapeHtml(action.actioned_by)}</strong> at ${action.actioned_at}</span>
+                       <button class="btn btn-tiny" onclick="undoAlertAction(${idx})">Undo</button>
+                   </div>`
+                : `<button class="btn btn-small btn-action" onclick="markAlertActioned(${idx})">✋ Mark as actioned</button>`;
+            return `
+            <div class="insight-item severity-${i.severity} ${action ? 'actioned' : ''}">
                 <span class="insight-icon">${i.icon || '⚡'}</span>
                 <div class="insight-content">
                     <div class="insight-title">${escapeHtml(i.title)}</div>
                     <div class="insight-message">${escapeHtml(i.message)}</div>
                     <div class="insight-action">→ ${escapeHtml(i.action)}</div>
+                    ${actionedHtml}
                 </div>
                 <span class="insight-badge badge-${i.severity}">${i.severity}</span>
             </div>
-        `).join('');
+        `}).join('');
     } catch (e) {
         banner.style.display = 'none';
+    }
+}
+
+async function markAlertActioned(alertIndex) {
+    if (!currentUser) { alert('Please log in first'); return; }
+    try {
+        await fetch(`${API}/api/alerts/action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bu_sk: selectedBu, alert_index: alertIndex, username: currentUser.username }),
+        });
+        loadInsights();  // Refresh to show updated state
+    } catch (e) {
+        console.error('Failed to mark alert:', e);
+    }
+}
+
+async function undoAlertAction(alertIndex) {
+    try {
+        await fetch(`${API}/api/alerts/action?bu_sk=${selectedBu}&alert_index=${alertIndex}`, { method: 'DELETE' });
+        loadInsights();
+    } catch (e) {
+        console.error('Failed to undo alert action:', e);
     }
 }
 

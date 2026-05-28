@@ -16,12 +16,27 @@
         <div class="login-card">
             <img src="/static/ikea-logo.png?v=3" alt="IKEA" class="login-logo">
             <h2>Hej Assistant</h2>
-            <p>Enter the password to continue</p>
+            <p>Select your profile to continue</p>
             <form onsubmit="handleLogin(event)">
+                <div class="user-grid" id="user-grid">
+                    <!-- Filled by JS -->
+                </div>
+                <input type="hidden" id="login-username" value="">
                 <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" required>
-                <button type="submit" class="btn btn-primary">Log in</button>
+                <button type="submit" class="btn btn-primary" id="login-btn" disabled>Log in</button>
                 <p id="login-error" class="login-error" style="display:none;">Incorrect password</p>
             </form>
+            <div class="create-user-toggle">
+                <span>Not listed?</span>
+                <button type="button" class="btn btn-link" onclick="toggleCreateUser()">Create profile</button>
+            </div>
+            <div id="create-user-form" class="create-user-form" style="display:none;">
+                <h3>New profile</h3>
+                <input type="text" id="new-user-name" placeholder="Full name" required>
+                <input type="text" id="new-user-role" placeholder="Role (e.g. Sales Manager)">
+                <button type="button" class="btn btn-primary" onclick="createUser()">Create &amp; select</button>
+                <p id="create-user-error" class="login-error" style="display:none;"></p>
+            </div>
         </div>
     </div>
 

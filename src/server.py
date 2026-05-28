@@ -94,13 +94,42 @@ def _get_or_create_agent(session_id: str, bu_sk: int) -> RetailAgent:
 # Request / Response models
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
-# Site password (env var or default for hackathon demo)
+# Site password & users (hackathon demo)
 # ---------------------------------------------------------------------------
 SITE_PASSWORD = os.environ.get("SITE_PASSWORD", "HelloIngvar!")
-_auth_tokens: set[str] = set()
+_auth_tokens: dict[str, str] = {}  # token -> username
+
+USERS = [
+    {
+        "username": "ingvar",
+        "display_name": "Ingvar Kamprad",
+        "role": "Store Manager",
+        "initials": "IK",
+    },
+    {
+        "username": "vasiliki",
+        "display_name": "Vasiliki Karasi",
+        "role": "Commercial Lead",
+        "initials": "VK",
+    },
+    {
+        "username": "marleen",
+        "display_name": "Marleen van Kalmthout",
+        "role": "Sales Manager",
+        "initials": "MK",
+    },
+    {"username": "joost", "display_name": "Joost Jansen", "role": "Data Lead", "initials": "JJ"},
+    {
+        "username": "erik",
+        "display_name": "Erik Lindqvist",
+        "role": "Operations Manager",
+        "initials": "EL",
+    },
+]
 
 
 class LoginRequest(BaseModel):
+    username: str
     password: str
 
 
@@ -132,13 +161,101 @@ class ReportResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # API routes
 # ---------------------------------------------------------------------------
+class CreateUserRequest(BaseModel):
+    display_name: str
+    role: str
+
+
+@app.get("/api/users")
+def list_users():
+    """Return available users for login screen."""
+    return [
+        {
+            "username": u["username"],
+            "display_name": u["display_name"],
+            "role": u["role"],
+            "initials": u["initials"],
+        }
+        for u in USERS
+    ]
+
+
+@app.post("/api/users")
+def create_user(req: CreateUserRequest):
+    """Create a new user (hackathon demo — in-memory only)."""
+    name = req.display_name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Name is required")
+    # Generate username from display name
+    username = name.lower().replace(" ", ".")[:20]
+    # Ensure unique
+    if any(u["username"] == username for u in USERS):
+        raise HTTPException(status_code=409, detail="User already exists")
+    # Build initials from first letter of each word
+    parts = name.split()
+    initials = "".join(p[0].upper() for p in parts[:2]) if parts else "??"
+    user = {
+        "username": username,
+        "display_name": name,
+        "role": req.role.strip() or "Team Member",
+        "initials": initials,
+    }
+    USERS.append(user)
+    return user
+
+
 @app.post("/api/login")
 def login(req: LoginRequest):
-    if hmac.compare_digest(req.password, SITE_PASSWORD):
-        token = secrets.token_hex(32)
-        _auth_tokens.add(token)
-        return {"ok": True, "token": token}
-    raise HTTPException(status_code=401, detail="Invalid password")
+    if not hmac.compare_digest(req.password, SITE_PASSWORD):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    user = next((u for u in USERS if u["username"] == req.username), None)
+    if not user:
+        raise HTTPException(status_code=401, detail="Unknown user")
+    token = secrets.token_hex(32)
+    _auth_tokens[token] = user["username"]
+    return {"ok": True, "token": token, "user": user}
+
+
+# ---------------------------------------------------------------------------
+# Alert actions — mark insights as actioned
+# ---------------------------------------------------------------------------
+_alert_actions: dict[str, dict] = {}  # key: "{bu_sk}:{alert_index}" -> {actioned_by, actioned_at}
+
+
+class AlertActionRequest(BaseModel):
+    bu_sk: int
+    alert_index: int
+    username: str
+
+
+@app.post("/api/alerts/action")
+def action_alert(req: AlertActionRequest):
+    """Mark an alert as actioned by a user."""
+    key = f"{req.bu_sk}:{req.alert_index}"
+    user = next((u for u in USERS if u["username"] == req.username), None)
+    if not user:
+        raise HTTPException(status_code=400, detail="Unknown user")
+    _alert_actions[key] = {
+        "actioned_by": user["display_name"],
+        "actioned_at": datetime.now().strftime("%H:%M"),
+        "initials": user["initials"],
+    }
+    return {"ok": True, **_alert_actions[key]}
+
+
+@app.delete("/api/alerts/action")
+def undo_alert_action(bu_sk: int, alert_index: int):
+    """Undo an alert action."""
+    key = f"{bu_sk}:{alert_index}"
+    _alert_actions.pop(key, None)
+    return {"ok": True}
+
+
+@app.get("/api/alerts/actions/{bu_sk}")
+def get_alert_actions(bu_sk: int):
+    """Get all actioned alerts for a store."""
+    prefix = f"{bu_sk}:"
+    return {k.split(":")[1]: v for k, v in _alert_actions.items() if k.startswith(prefix)}
 
 
 @app.get("/api/health")
