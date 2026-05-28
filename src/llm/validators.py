@@ -62,8 +62,33 @@ def validate_article_references(response: str, store: DataStore) -> list[str]:
         "ARTICLE",
         "AVAILABLE",
         "DEMAND",
+        "NOW",
+        "NEW",
+        "NYE",
+        "MEDIUM",
+        "WATCH",
+        "BEST",
+        "STAR",
+        "GAP",
+        "RUN",
+        "ACT",
+        "RISK",
+        "SIGNAL",
+        "NOTE",
+        "CONTEXT",
+        "HOLIDAY",
+        "PEAK",
+        "SEASON",
     }
     potential_refs -= common_words
+
+    # Also exclude store names
+    store_names = set()
+    for name in store.stores["bu_name"].dropna().unique():
+        for word in name.upper().split():
+            if len(word) >= 3:
+                store_names.add(word)
+    potential_refs -= store_names
 
     for ref in potential_refs:
         if ref not in known_series:
