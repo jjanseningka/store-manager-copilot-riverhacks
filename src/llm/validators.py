@@ -84,7 +84,7 @@ def validate_article_references(response: str, store: DataStore) -> list[str]:
 
     # Also exclude store names
     store_names = set()
-    for name in store.stores["bu_name"].dropna().unique():
+    for name in store.business_units["bu_name"].dropna().unique():
         for word in name.upper().split():
             if len(word) >= 3:
                 store_names.add(word)
