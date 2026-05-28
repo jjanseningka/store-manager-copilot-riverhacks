@@ -1,0 +1,37 @@
+# Default: let Git decide. Text files get normalized to LF on commit.
+* text=auto eol=lf
+
+# POSIX shell scripts, hooks, and Python MUST stay LF even on Windows.
+# bash and uv refuse to run scripts with CRLF line endings.
+*.sh        text eol=lf
+*.py        text eol=lf
+*.toml      text eol=lf
+*.lock      text eol=lf
+Makefile    text eol=lf
+
+# PowerShell scripts: CRLF is the platform-native default.
+# Some PowerShell parsers tolerate LF, but be explicit.
+*.ps1       text eol=crlf
+*.psm1      text eol=crlf
+*.psd1      text eol=crlf
+*.cmd       text eol=crlf
+*.bat       text eol=crlf
+
+# Markdown, YAML, JSON: LF is universal.
+*.md        text eol=lf
+*.mdc       text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.json      text eol=lf
+
+# Binary blobs.
+*.pdf       binary
+*.png       binary
+*.jpg       binary
+*.gif       binary
+*.zip       binary
+*.tar.gz    binary
+
+# Lockfiles: keep them readable in PR diffs.
+uv.lock         linguist-generated=true
+package-lock.json linguist-generated=true

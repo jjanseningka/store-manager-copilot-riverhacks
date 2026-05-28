@@ -1,0 +1,75 @@
+---
+description: Python coding standards. Loaded only when editing Python files.
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python
+
+## Version and tooling
+
+- Target Python 3.11+. Use modern syntax: `match`, `X | Y` unions, PEP 604.
+- Manage dependencies with `uv` and a lockfile. Do not invent
+  `requirements.txt` files when a `pyproject.toml` already exists.
+- Format and lint with `ruff`. Type-check with `pyright` or `mypy`.
+
+## Type hints
+
+- Required on every public function, method, and class attribute.
+- Use built-in generics: `list[str]`, `dict[str, int]`, `tuple[int, ...]`.
+- Prefer `TypeAlias`, `TypedDict`, and `Protocol` over `Any`.
+- `Any` needs a comment explaining why it is unavoidable.
+
+## Function shape
+
+- One responsibility per function. Aim for under 20 lines.
+- Maximum 5 positional parameters; promote to a dataclass past that.
+- Return one type. `Optional[T]` is fine; `Union[A, B, C]` usually means
+  the function is doing too much.
+- Verb-noun naming: `calculate_total`, `fetch_user`, `validate_input`.
+- Boolean returns start with `is_`, `has_`, `can_`, `should_`.
+
+## Error handling
+
+- Catch the narrowest exception that fits. Never bare `except:`.
+- Re-raise with context: `raise NewError("...") from e`.
+- Build domain exception hierarchies; do not abuse `ValueError` for
+  everything.
+- Validate inputs at the boundary of the system, fail fast inside.
+
+## Imports
+
+- Standard library, then third-party, then local. Blank line between groups.
+- Sorted alphabetically within each group (ruff handles this).
+- No wildcard imports.
+- No imports inside functions unless avoiding a true circular import.
+
+## Data structures
+
+- Prefer immutable: `tuple` over `list` for fixed sequences,
+  `frozenset` over `set` when possible.
+- Use `dataclasses` for structured mutable data, `NamedTuple` for
+  immutable structured data.
+- Reach for `collections.Counter`, `collections.defaultdict`,
+  `collections.deque` before reinventing them.
+
+## Performance
+
+- Profile before optimizing. Do not pre-optimize.
+- Use generators for large sequences.
+- Cache expensive pure functions with `functools.cache`.
+- Use `__slots__` only when memory is measurably tight.
+
+## Async
+
+- Use `async def` only when there is real I/O concurrency to gain.
+- Never block the event loop with `time.sleep`, sync `requests`, or CPU-
+  heavy work. Use `asyncio.sleep`, `httpx.AsyncClient`, or `run_in_executor`.
+
+## Anti-patterns
+
+- Mutable default arguments: `def f(x=[])` → use `None` and assign inside.
+- Catching `Exception` to "make the test pass".
+- Returning `None` to signal an error path; raise instead.
+- `print()` for debugging in production code; use the `logging` module.
+- Reaching for inheritance when composition is enough.

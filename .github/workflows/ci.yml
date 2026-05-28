@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  pre-commit:
+    name: Pre-commit hooks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: pre-commit/action@v3.0.1
+
+  smoke:
+    name: Smoke check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: latest
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run smoke check (POSIX)
+        if: runner.os != 'Windows'
+        run: ./scripts/agent-smoke-check.sh
+
+      - name: Run smoke check (Windows PowerShell)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: pwsh -NoProfile -File ./scripts/agent-smoke-check.ps1
+
+      - name: Verify workspace lockfile is up to date
+        run: uv lock --check
+
+      - name: Smoke the hello-world MCP server end-to-end
+        run: uv run --frozen python scripts/smoke-mcp.py
+
+      - name: Verify hooks return valid JSON (POSIX)
+        if: runner.os != 'Windows'
+        run: |
+          set -euo pipefail
+          out=$(echo '{"command":"ls"}' | bash .cursor/hooks/block-destructive.sh)
+          echo "$out" | python -c "import json,sys; json.loads(sys.stdin.read())"
+
+      - name: Verify hooks return valid JSON (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $out = '{"command":"ls"}' | pwsh -NoProfile -File ./.cursor/hooks/block-destructive.ps1
+          $out | ConvertFrom-Json | Out-Null

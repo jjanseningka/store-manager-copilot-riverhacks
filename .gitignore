@@ -1,0 +1,35 @@
+# Local secrets — never commit.
+.env
+.env.*
+!.env.example
+
+# Agent scratch space — plans are session-local by default.
+# Keep the directory and its README so the /plan command has somewhere to write.
+.cursor/plans/*
+!.cursor/plans/README.md
+
+# Python.
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Node.
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build / dist.
+dist/
+build/
+coverage/
+
+# OS / editor noise.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Cursor session artefacts that should stay local.
+.cursor/cache/

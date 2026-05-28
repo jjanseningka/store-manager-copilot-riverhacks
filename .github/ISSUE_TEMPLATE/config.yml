@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or discussion
+    url: https://github.com/REPLACE/agentic-engineering-starter/discussions
+    about: Use Discussions for usage questions and ideas. File an issue only for bugs and concrete feature requests.

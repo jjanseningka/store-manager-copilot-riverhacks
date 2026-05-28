@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    },
+    "hello-world": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "mcp-servers/hello-world",
+        "run",
+        "--frozen",
+        "python",
+        "server.py"
+      ]
+    }
+  }
+}

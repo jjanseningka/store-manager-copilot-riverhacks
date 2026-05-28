@@ -1,0 +1,129 @@
+# Pre-commit hooks for the agentic-engineering-starter scaffold.
+#
+# Install once per checkout:
+#   uv tool install pre-commit  (or: pip install pre-commit)
+#   pre-commit install
+#
+# Then every `git commit` runs the hooks below. To run on demand:
+#   pre-commit run --all-files     (or: make pre-commit)
+#
+# Hook revisions are pinned. Refresh under the same 7-day soak window
+# you apply to runtime deps (see CONTRIBUTING.md):
+#   pre-commit autoupdate
+# then review the diff before committing the new revs.
+
+default_install_hook_types: [pre-commit]
+default_stages: [pre-commit]
+fail_fast: false
+
+repos:
+  # Generic file hygiene.
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.md$
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+        exclude: \.(ps1|psm1|psd1|cmd|bat)$
+
+  # Secret scanning. Catches AWS keys, JWTs, GitHub PATs, .env leaks.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        exclude: \.(template|example|baseline)$
+
+  # Shell lint. Runs against every committed *.sh file.
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        args: ['--severity=warning']
+
+  # Shell formatter. Two-space indent, indent case statements, binary ops on next line.
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.8.0-1
+    hooks:
+      - id: shfmt
+        args: ['-i', '2', '-ci', '-bn']
+
+  # Python lint + format. Only fires on *.py files.
+  # --exit-non-zero-on-fix forces the user to re-stage after auto-fixes,
+  # so silently-rewritten code never sneaks into a commit.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.7
+    hooks:
+      - id: ruff-format
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  # Python security scanning. Medium+ severity only; tests excluded.
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        args: ['-ll']
+        exclude: ^(tests/|.*test_.*\.py$)
+
+  # YAML linting beyond syntax (formatting, key duplication, etc.).
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [-d, relaxed]
+
+  # GitHub Actions linter.
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.1
+    hooks:
+      - id: actionlint
+
+  # ----- Type checking (commented; trainee wires up to their toolchain) -----
+  #
+  # Pyright is the recommended type checker (see .cursor/rules/040-python.mdc).
+  # The starter ships a uv workspace at the repo root with [tool.pyright]
+  # config covering src/, tests/, and mcp-servers/. Pick the entry that
+  # matches how YOUR project manages Python deps:
+  #
+  # uv workspace (matches this starter's default):
+  # - repo: local
+  #   hooks:
+  #     - id: pyright
+  #       name: pyright
+  #       entry: uv run pyright
+  #       language: system
+  #       types: [python]
+  #       pass_filenames: false
+  #
+  # poetry-based projects:
+  # - repo: local
+  #   hooks:
+  #     - id: pyright
+  #       name: pyright
+  #       entry: poetry run pyright
+  #       language: system
+  #       types: [python]
+  #       pass_filenames: false
+  #
+  # Either way: add pyright to your project's dev deps before enabling.
+
+  # Local hooks: run our own scripts as gates.
+  - repo: local
+    hooks:
+      - id: agent-smoke-check
+        name: agent scaffold smoke check
+        entry: ./scripts/agent-smoke-check.sh
+        language: system
+        pass_filenames: false
+        # Re-run only when files affecting the scaffold change.
+        files: ^(\.cursor/|mcp-servers/|scripts/|docs/|AGENTS\.md|README\.md|\.env\.example|\.gitignore|\.gitattributes|Makefile|LICENSE|CHANGELOG\.md|CONTRIBUTING\.md|SECURITY\.md|\.editorconfig|\.github/)

@@ -1,0 +1,17 @@
+---
+description: Agent workflow for planning, editing, and verification.
+alwaysApply: true
+---
+
+# Agent Workflow
+
+For non-trivial changes:
+
+1. Research first.
+2. State the files to touch.
+3. Make the smallest coherent edit.
+4. Run the narrowest relevant verification.
+5. Summarize what changed and what was not verified.
+
+If a plan goes wrong, stop and revise the plan instead of layering fixes on top
+of a bad direction.

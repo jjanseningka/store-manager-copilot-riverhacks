@@ -1,0 +1,12 @@
+---
+description: Safety boundaries for agentic coding sessions.
+alwaysApply: true
+---
+
+# Agent Safety
+
+- Never commit secrets, tokens, `.env` files, or credential exports.
+- Never run destructive commands without explicit user approval.
+- Prefer read-only exploration before editing.
+- Treat public MCP servers as untrusted until configured with least privilege.
+- Use write-capable tools only when the task has a verifier.

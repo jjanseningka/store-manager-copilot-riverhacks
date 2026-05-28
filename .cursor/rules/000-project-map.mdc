@@ -1,0 +1,14 @@
+---
+description: Use the project map before broad codebase exploration.
+alwaysApply: true
+---
+
+# Project Map
+
+Before broad exploration, read `docs/architecture/project-map.md`.
+
+Use exact search for known symbols. Use semantic search for "how does this work?"
+questions. Start in the subdirectory that owns the change.
+
+Do not open generated files, lock files, build outputs, or vendored code unless
+the task specifically requires them.

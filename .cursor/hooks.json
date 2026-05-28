@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/block-destructive.sh",
+        "failClosed": true
+      }
+    ],
+    "stop": [
+      {
+        "type": "prompt",
+        "prompt": "Session is ending. If you made non-trivial changes, ran multi-step workflows, or hit a surprise worth remembering, append ONE entry to docs/knowledge/MEMORY.md using the template at the top of that file. If the session was trivial (a single small fix, pure conversation, or read-only exploration), respond with exactly 'no memory entry needed' and do nothing else. Do not edit MEMORY.md more than once.",
+        "loop_limit": 1
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+[project]
+name = "hello-world-mcp"
+version = "0.1.0"
+description = "Hello-world MCP server for the cursor starter repo."
+requires-python = ">=3.11"
+dependencies = [
+  "mcp>=1.0.0",
+]
+
+[project.scripts]
+hello-world-mcp = "server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+only-include = ["server.py"]
+
+# Workspace member: uv settings (Python version, exclude-newer, lockfile)
+# live in the workspace root at //pyproject.toml.

@@ -1,0 +1,53 @@
+# Workspace root.
+#
+# Two responsibilities:
+# 1. Tool config (ruff, pytest, pyright) for the whole repo.
+# 2. uv workspace declaration so every Python sub-project (currently just
+#    the hello-world MCP server) shares one lockfile and one supply-chain
+#    soak window. See `docs/references/mcp-servers.md` for the rationale.
+#
+# The root itself is NOT a Python project — there is no `[project]` table.
+# Sample code in `src/sample/` is a placeholder and imports via
+# `pythonpath = ["src"]`, not via uv. Add a `[project]` table here when
+# you replace the sample with a real app.
+
+[tool.uv.workspace]
+members = ["mcp-servers/hello-world"]
+
+[tool.uv]
+# Supply-chain hygiene: refuse to resolve any package published in the
+# last 7 days. Most malicious PyPI uploads get yanked or flagged within
+# that window. Applies to every workspace member.
+#
+# Bump explicitly with:
+#   make refresh-lockfile
+# which rewrites this cutoff to "today minus 7 days" and re-runs `uv lock`.
+exclude-newer = "2026-05-19T00:00:00Z"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "mcp-servers/hello-world"]
+
+[tool.ruff.lint]
+# Lean but opinionated default set. Add or remove rules as the project grows.
+# See https://docs.astral.sh/ruff/rules/ for the full catalogue.
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # bugbear
+  "UP",  # pyupgrade
+  "SIM", # flake8-simplify
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.pyright]
+include = ["src", "tests", "mcp-servers/hello-world"]
+pythonVersion = "3.11"
+typeCheckingMode = "basic"

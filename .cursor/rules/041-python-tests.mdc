@@ -1,0 +1,69 @@
+---
+description: Python testing conventions. Loaded only when editing Python test files.
+globs: "**/test_*.py,**/*_test.py,**/tests/**/*.py"
+alwaysApply: false
+---
+
+# Python Tests
+
+## Framework
+
+- Use `pytest`. Plain `unittest.TestCase` is acceptable when extending
+  legacy code, not for new tests.
+- Async tests need `pytest-asyncio` and the `@pytest.mark.asyncio`
+  decorator (or `asyncio_mode = "auto"` in `pyproject.toml`).
+
+## Layout
+
+- One test file per source module: `src/foo/bar.py` -> `tests/foo/test_bar.py`.
+- Group related tests in a `class TestThing` only when they share fixtures.
+- Test names describe the behavior, not the function:
+  - Good: `test_returns_empty_when_input_is_none`
+  - Bad: `test_function`
+
+## AAA pattern
+
+```python
+def test_user_lookup_returns_none_for_missing_id():
+    # Arrange
+    repo = UserRepository(connection=fake_db())
+
+    # Act
+    result = repo.find_by_id("does-not-exist")
+
+    # Assert
+    assert result is None
+```
+
+Keep the three sections visible. If a test has more than five lines per
+section, split it.
+
+## Fixtures
+
+- Define shared fixtures in `conftest.py` at the appropriate scope.
+- Prefer function-scoped fixtures unless the setup is genuinely expensive.
+- Make the fixture name describe the value, not the action:
+  `authenticated_user`, not `setup_user`.
+
+## Mocking
+
+- Use `unittest.mock.patch` for stdlib targets, `pytest-mock` for ergonomic
+  mocking via the `mocker` fixture.
+- Mock the boundary, not the language. Patch `requests.get`, not
+  `dict.__getitem__`.
+- For async, use `AsyncMock`, not `Mock` with a coroutine return value.
+
+## Coverage targets
+
+- 80% line coverage for non-business logic.
+- 100% branch coverage for business rules and error paths.
+- A test that only asserts "no exception raised" is rarely worth keeping.
+
+## Anti-patterns
+
+- Sleeping in tests to "wait for async work". Await the work directly or
+  use a deterministic clock.
+- Hitting real networks, real databases, real filesystems outside `tmp_path`.
+- Asserting on log messages as a substitute for asserting on behavior.
+- Sharing mutable state between tests (module-level lists, class attributes).
+- Tests that pass in isolation but fail when run as a suite (or vice versa).
