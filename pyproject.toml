@@ -6,10 +6,20 @@
 #    the hello-world MCP server) shares one lockfile and one supply-chain
 #    soak window. See `docs/references/mcp-servers.md` for the rationale.
 #
-# The root itself is NOT a Python project — there is no `[project]` table.
 # Sample code in `src/sample/` is a placeholder and imports via
-# `pythonpath = ["src"]`, not via uv. Add a `[project]` table here when
-# you replace the sample with a real app.
+# `pythonpath = ["src"]`, not via uv.
+
+[project]
+name = "riverhacks"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit>=1.45.0",
+    "anthropic>=0.52.0",
+    "pandas>=2.2.0",
+    "fpdf2>=2.8.0",
+    "python-dotenv>=1.0.0",
+]
 
 [tool.uv.workspace]
 members = ["mcp-servers/hello-world"]

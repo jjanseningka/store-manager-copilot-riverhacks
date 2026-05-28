@@ -1,0 +1,31 @@
+item_sk,item_no,item_type,series,description,colour,home_furnishing_business_name,home_furnishing_business_no,product_area_name,product_area_no,product_range_area_name,product_range_area_no,content_version,insert_date_time
+1,123456,ART,BRODY,Bookcase,white,Living Room Storage,1,Bookcases & Shelving,101,Open Shelving,10101,1,2021-02-12 00:00:00
+2,234567,ART,KALLO,Shelf unit,black,Living Room Storage,1,Bookcases & Shelving,101,Closed Shelving,10102,4,2020-03-14 00:00:00
+3,345678,ART,ELVEN,Sofa,oak,Sofas & Armchairs,2,Sofas,201,3-Seat Sofas,20101,3,2021-05-08 00:00:00
+4,456789,ART,MOLBY,Bed frame,beige,Beds & Mattresses,3,Bed Frames,301,Double Beds,30101,1,2020-11-28 00:00:00
+5,567890,ART,PAXON,Wardrobe,grey,Wardrobes,4,Wardrobe Frames,401,PAX-style Systems,40101,2,2019-04-05 00:00:00
+6,678901,ART,HELNO,TV unit,dark brown,Storage,7,TV Storage,702,TV Benches,70201,3,2021-09-02 00:00:00
+7,789012,ART,BEXTA,Coffee table,light grey,Tables & Desks,5,Coffee & Side Tables,503,Coffee Tables,50301,4,2021-01-31 00:00:00
+8,890123,ART,LACKO,Dining table,walnut,Tables & Desks,5,Dining Tables,501,Extendable Tables,50101,4,2021-02-25 00:00:00
+9,901234,ART,POVIK,Chair,pine,Chairs,6,Dining Chairs,601,Upholstered Chairs,60101,3,2019-05-09 00:00:00
+10,1012345,ART,KLOVA,Desk,anthracite,Tables & Desks,5,Desks,502,Corner Desks,50201,5,2020-03-26 00:00:00
+11,1123456,ART,FRIHO,Chest of drawers,white,Storage,7,Chest of Drawers,701,6-drawer,70101,3,2020-01-06 00:00:00
+12,1234567,ART,VARLO,Side table,black,Tables & Desks,5,Coffee & Side Tables,503,Side Tables,50302,1,2021-07-15 00:00:00
+13,1345678,ART,SODRA,Armchair,oak,Sofas & Armchairs,2,Armchairs,202,Lounge Chairs,20201,4,2020-10-05 00:00:00
+14,1456789,ART,KIVON,Bookshelf,beige,Living Room Storage,1,Bookcases & Shelving,101,Open Shelving,10101,3,2021-04-02 00:00:00
+15,1567890,ART,LANDO,Storage bench,grey,Hallway,10,Hallway Furniture,1002,Benches & Ottomans,100201,3,2020-03-19 00:00:00
+16,1678901,ART,EKOSK,Display cabinet,dark brown,Living Room Storage,1,Bookcases & Shelving,101,Closed Shelving,10102,3,2019-08-16 00:00:00
+17,1789012,ART,STOVA,Sideboard,light grey,Living Room Storage,1,Sideboards & Buffets,102,Sideboards,10201,1,2020-07-08 00:00:00
+18,1890123,ART,LIDVO,Lounge chair,walnut,Sofas & Armchairs,2,Armchairs,202,Lounge Chairs,20201,5,2019-03-05 00:00:00
+19,1901234,ART,MORVO,Corner sofa,pine,Sofas & Armchairs,2,Sofas,201,Corner & Modular Sofas,20103,5,2021-04-07 00:00:00
+20,2012345,ART,DELVO,Ottoman,anthracite,Sofas & Armchairs,2,Armchairs & Ottomans,202,Footstools & Ottomans,20202,2,2020-09-23 00:00:00
+21,2123456,ART,HOLVO,Dining chair,white,Chairs,6,Dining Chairs,601,Upholstered Chairs,60101,1,2021-01-28 00:00:00
+22,2234567,ART,UPPVO,Bar stool,black,Chairs,6,Bar Stools,603,Bar Stools,60301,4,2019-12-21 00:00:00
+23,2345678,ART,GRONT,Floor lamp,oak,Lighting,8,Floor Lamps,801,Tripod Lamps,80101,1,2021-08-28 00:00:00
+24,2456789,ART,FINVO,Wall shelf,beige,Living Room Storage,1,Bookcases & Shelving,101,Open Shelving,10101,3,2021-06-12 00:00:00
+25,2567890,ART,HYLTV,Shoe cabinet,grey,Hallway,10,Shoe Storage,1001,Shoe Cabinets,100101,4,2021-02-17 00:00:00
+26,2678901,ART,STRAV,Hallway bench,dark brown,Hallway,10,Hallway Furniture,1002,Benches & Ottomans,100201,4,2019-07-14 00:00:00
+27,2789012,ART,FROJEV,Coat stand,light grey,Hallway,10,Hallway Furniture,1002,Coat Stands & Hooks,100202,2,2020-04-11 00:00:00
+28,2890123,ART,KOVARP,Mirror,walnut,Bedroom,9,Mirrors,902,Full-length Mirrors,90201,3,2019-02-13 00:00:00
+29,2901234,SGR,LANGV,Storage box,pine,Storage,7,General Storage,703,Boxes & Baskets,70301,3,2019-06-04 00:00:00
+30,3012345,SGR,MAROV,Bed base,anthracite,Bedroom,9,Bed Bases,901,Slatted Bases,90101,4,2020-11-14 00:00:00

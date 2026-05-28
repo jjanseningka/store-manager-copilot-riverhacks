@@ -1,0 +1,9 @@
+bu_sk,bu_name,bu_short_name,country_code,city,street,postal_code,timezone,latitude,longitude
+1,NORVIK Berlin,Berlin,DE,Berlin,Hauptstraße 12,10785,Europe/Berlin,52.5079,13.3644
+2,NORVIK Stockholm,Stockholm,SE,Stockholm,Storgatan 45,14175,Europe/Stockholm,59.2741,17.9253
+3,NORVIK Amsterdam,Amsterdam,NL,Amsterdam,Keizersgracht 200,1101BL,Europe/Amsterdam,52.3095,4.9511
+4,NORVIK Paris,Paris,FR,Villiers-sur-Marne,2 Av. du Commerce,94350,Europe/Paris,48.831,2.538
+5,NORVIK Warsaw,Warsaw,PL,Warsaw,ul. Handlowa 10,01-377,Europe/Warsaw,52.2473,20.9232
+6,NORVIK New York,New York,US,New York,300 Commerce Ave,10001,America/New_York,40.7128,-74.006
+7,NORVIK London,London,GB,London,"Retail Park, East London",E16 2TQ,Europe/London,51.5074,-0.1278
+8,NORVIK Shanghai,Shanghai,CN,Shanghai,No. 1 Huashang Road,200120,Asia/Shanghai,31.2304,121.4737

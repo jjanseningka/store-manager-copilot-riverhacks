@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hej Assistant — IKEA Store Intelligence</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://www.ikea.com/global/assets/fonts/en/fonts.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ikea_logo.svg/200px-Ikea_logo.svg.png" alt="IKEA" class="logo">
+            <h2>Hej Assistant</h2>
+            <p class="subtitle">Your commercial intelligence co-worker</p>
+        </div>
+
+        <div class="sidebar-section">
+            <label for="store-select">Select your store</label>
+            <select id="store-select"></select>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="data-date" id="data-date">Loading...</div>
+        </div>
+
+        <div class="sidebar-metrics" id="sidebar-metrics">
+            <!-- Filled by JS -->
+        </div>
+
+        <div class="sidebar-footer">
+            <p>Powered by Claude AI</p>
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+        <!-- Tab navigation -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="briefing">📋 Daily Briefing</button>
+            <button class="tab" data-tab="chat">💬 Ask Me Anything</button>
+            <button class="tab" data-tab="data">📊 Data Explorer</button>
+        </nav>
+
+        <!-- Tab: Daily Briefing -->
+        <section class="tab-content active" id="tab-briefing">
+            <div class="tab-header">
+                <div>
+                    <h1>Daily Commercial Briefing</h1>
+                    <p class="store-label" id="briefing-store-label"></p>
+                </div>
+                <div class="tab-actions">
+                    <button class="btn btn-primary" id="btn-generate" onclick="generateReport()">
+                        🔄 Generate Report
+                    </button>
+                    <button class="btn btn-secondary" id="btn-pdf" onclick="exportPDF()" style="display:none;">
+                        📄 Export PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick snapshot cards -->
+            <div class="snapshot-grid" id="snapshot-grid">
+                <!-- Filled by JS -->
+            </div>
+
+            <!-- Report area -->
+            <div class="report-area" id="report-area">
+                <div class="empty-state">
+                    <span class="empty-icon">📋</span>
+                    <h3>Ready to generate your briefing</h3>
+                    <p>Click <strong>Generate Report</strong> to create your daily commercial briefing with AI-powered insights.</p>
+                </div>
+            </div>
+
+            <!-- Warnings -->
+            <div class="warnings" id="report-warnings" style="display:none;"></div>
+        </section>
+
+        <!-- Tab: Chat -->
+        <section class="tab-content" id="tab-chat">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h1>Ask your store data anything</h1>
+                    <p>I'll analyse the data and give you actionable insights.</p>
+                    <button class="btn btn-small" onclick="clearChat()">🗑️ Clear chat</button>
+                </div>
+
+                <!-- Suggested questions -->
+                <div class="suggestions" id="suggestions">
+                    <p class="suggestions-label">💡 Suggested questions:</p>
+                    <div class="suggestion-chips">
+                        <button class="chip" onclick="askSuggestion(this)">What are my top 10 selling articles last 7 days?</button>
+                        <button class="chip" onclick="askSuggestion(this)">Which HFB is driving the highest sales growth?</button>
+                        <button class="chip" onclick="askSuggestion(this)">Which high-selling articles are currently out of stock?</button>
+                        <button class="chip" onclick="askSuggestion(this)">What is my store's gross margin this week?</button>
+                        <button class="chip" onclick="askSuggestion(this)">What are the top 5 actions I should take today?</button>
+                        <button class="chip" onclick="askSuggestion(this)">What should I brief my team on in today's huddle?</button>
+                        <button class="chip" onclick="askSuggestion(this)">Which articles have declining sales momentum?</button>
+                        <button class="chip" onclick="askSuggestion(this)">Which HFBs have strong sales but low margin?</button>
+                        <button class="chip" onclick="askSuggestion(this)">What should I focus on in the first 2 hours?</button>
+                        <button class="chip" onclick="askSuggestion(this)">What's the one thing I must not miss today?</button>
+                    </div>
+                </div>
+
+                <!-- Chat messages -->
+                <div class="chat-messages" id="chat-messages"></div>
+
+                <!-- Chat input -->
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Ask me anything about your store..." 
+                           onkeydown="if(event.key==='Enter')sendChat()">
+                    <button class="btn btn-primary" onclick="sendChat()">Send</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab: Data Explorer -->
+        <section class="tab-content" id="tab-data">
+            <div class="tab-header">
+                <h1>Data Explorer</h1>
+                <select id="data-view-select" onchange="loadDataView()">
+                    <option value="top-articles">Top Articles (Sales)</option>
+                    <option value="hfb">HFB Performance</option>
+                    <option value="stock-alerts">Stock Alerts</option>
+                    <option value="availability-risks">Availability Risks</option>
+                    <option value="declining">Declining Articles</option>
+                    <option value="priorities">Daily Priorities</option>
+                </select>
+                <select id="data-period-select" onchange="loadDataView()">
+                    <option value="7d">Last 7 days</option>
+                    <option value="30d">Last 30 days</option>
+                    <option value="ytd">Year to date</option>
+                </select>
+            </div>
+            <div class="data-table-area" id="data-table-area">
+                <div class="empty-state">
+                    <span class="empty-icon">📊</span>
+                    <h3>Select a view to explore your data</h3>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
